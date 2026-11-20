@@ -420,7 +420,7 @@ export const translations: Record<"gu" | "en" | "hi", TranslationDict> = {
         events: "Events",
         venue: "Venue",
         blessings: "Blessings",
-        credits: "DotR",
+        credits: "DOTR",
       },
       footer: {
         madeWithLove: "Made with Love • August 2026",

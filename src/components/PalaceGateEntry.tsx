@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Key } from "lucide-react";
+import { Key, Phone, Mail } from "lucide-react";
 import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -45,7 +45,7 @@ const STAR_DATA = [
 ];
 
 export default function PalaceGateEntry({ onEnter }: PalaceGateEntryProps) {
-  const { t } = useLanguage();
+  const { t, formatNumber } = useLanguage();
   const [isVisible, setIsVisible] = useState(true);
   const [isEntering, setIsEntering] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -352,34 +352,61 @@ export default function PalaceGateEntry({ onEnter }: PalaceGateEntryProps) {
               initial={false}
               animate={isEntering ? { opacity: 0, scale: 0.7 } : { opacity: 1, scale: 1 }}
               transition={{ duration: 0.4, ease: "easeInOut" }}
-              className="absolute left-1/2 -translate-x-1/2 z-40"
+              className="absolute left-1/2 -translate-x-1/2 z-40 max-w-[95vw]"
               style={{ top: "66%" }}
             >
-              <a
-                href="http://dotr.in"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3.5 px-5 py-3 rounded-2xl border border-[#d4af37]/35 bg-black/75 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.1)] hover:border-gold-400/60 transition-all duration-300 cursor-pointer group hover:scale-[1.02]"
-              >
-                <div className="relative flex items-center justify-center p-1 bg-black/40 backdrop-blur-sm rounded-xl border border-[#d4af37]/35 h-10 w-24 overflow-hidden shadow-[0_0_15px_rgba(0,140,255,0.2)]">
-                  <Image 
-                    src="/logos/Glossy DOTR Globe-Orbit Logo.png" 
-                    alt="DHINOJA OmniTech Resolutions (DotR) Logo" 
-                    fill
-                    sizes="96px"
-                    className="object-contain transition-transform duration-500 group-hover:scale-105 drop-shadow-[0_0_8px_rgba(0,140,255,0.4)]" 
-                  />
+              <div className="flex flex-col items-center gap-2 px-4 py-2.5 rounded-2xl border border-[#d4af37]/35 bg-black/85 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.1)]">
+                {/* Main branding row */}
+                <a
+                  href="http://dotr.in"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 cursor-pointer group"
+                >
+                  <div className="relative flex items-center justify-center p-1 bg-white rounded-lg border border-[#d4af37]/40 h-8 w-16 sm:h-9 sm:w-20 overflow-hidden shadow-sm flex-shrink-0">
+                    <Image 
+                      src="/logos/DOTR_Full_Color_Logo.png" 
+                      alt="DHINOJA OmniTech Resolutions (DOTR) Logo" 
+                      fill
+                      sizes="80px"
+                      className="object-contain transition-transform duration-500 group-hover:scale-105" 
+                    />
+                  </div>
+                  
+                  <div className="flex flex-col items-start text-left">
+                    <span className="font-sans text-[7px] sm:text-[8px] tracking-[0.25em] text-[#d4af37]/90 uppercase font-bold">
+                      Crafted By
+                    </span>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="font-sans text-[10px] sm:text-[11px] tracking-[0.08em] text-[#f7e4a9] font-bold uppercase group-hover:text-white transition-colors whitespace-nowrap">
+                        DHINOJA OmniTech Resolutions
+                      </span>
+                      <span className="text-[9px] font-bold tracking-wider text-[#d4af37] bg-[#d4af37]/20 px-1.5 py-0.5 rounded border border-[#d4af37]/40 leading-none">
+                        DOTR
+                      </span>
+                    </div>
+                  </div>
+                </a>
+
+                {/* Contact pills row (Phone & Email) */}
+                <div className="flex items-center gap-2 pt-1.5 border-t border-[#d4af37]/20 w-full justify-center text-[10px] text-[#f7e4a9]/90 font-sans tracking-wide">
+                  <a
+                    href="tel:+918200965524"
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 hover:bg-[#d4af37] hover:text-black border border-[#d4af37]/25 transition-all duration-300 font-semibold whitespace-nowrap"
+                  >
+                    <Phone className="w-2.5 h-2.5" />
+                    <span>{formatNumber("+91 8200965524")}</span>
+                  </a>
+
+                  <a
+                    href="mailto:hello@dotr.in"
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 hover:bg-[#d4af37] hover:text-black border border-[#d4af37]/25 transition-all duration-300 font-semibold whitespace-nowrap"
+                  >
+                    <Mail className="w-2.5 h-2.5" />
+                    <span>hello@dotr.in</span>
+                  </a>
                 </div>
-                
-                <div className="flex flex-col items-start text-left">
-                  <span className="font-sans text-[8px] tracking-[0.25em] text-[#d4af37]/90 uppercase font-bold">
-                    Crafted By
-                  </span>
-                  <span className="font-sans text-[11px] tracking-[0.1em] text-[#f7e4a9] font-bold uppercase mt-0.5 group-hover:text-white transition-colors">
-                    DHINOJA OmniTech Resolutions
-                  </span>
-                </div>
-              </a>
+              </div>
             </motion.div>
 
           </motion.div>

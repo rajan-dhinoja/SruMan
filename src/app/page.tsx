@@ -428,22 +428,22 @@ function CreditsSection() {
           rel="noopener noreferrer"
           className="group flex flex-col items-center gap-3.5 cursor-pointer mb-6"
         >
-          {/* Glowing Glassmorphic Rectangular Logo Frame */}
+          {/* White Background Rectangular Logo Frame */}
           <motion.div 
             animate={{ 
               boxShadow: [
-                "0 0 15px rgba(212,175,55,0.1), inset 0 2px 10px rgba(255,255,255,0.05)",
-                "0 0 25px rgba(212,175,55,0.3), inset 0 2px 10px rgba(255,255,255,0.05)",
-                "0 0 15px rgba(212,175,55,0.1), inset 0 2px 10px rgba(255,255,255,0.05)"
+                "0 0 15px rgba(212,175,55,0.25), inset 0 2px 6px rgba(255,255,255,0.8)",
+                "0 0 25px rgba(212,175,55,0.5), inset 0 2px 6px rgba(255,255,255,0.8)",
+                "0 0 15px rgba(212,175,55,0.25), inset 0 2px 6px rgba(255,255,255,0.8)"
               ]
             }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            className="relative w-48 h-24 md:w-60 md:h-30 rounded-2xl bg-black/40 border border-[#d4af37]/35 flex items-center justify-center p-3 group-hover:scale-105 group-hover:border-[#d4af37]/60 transition-all duration-500 shadow-inner overflow-hidden"
+            className="relative w-48 h-24 md:w-60 md:h-30 rounded-2xl bg-white p-3 border-2 border-[#d4af37]/60 flex items-center justify-center group-hover:scale-105 group-hover:border-[#d4af37] transition-all duration-500 shadow-[0_0_20px_rgba(212,175,55,0.3)] overflow-hidden"
           >
             <img 
-              src="/logos/Glossy DOTR Globe-Orbit Logo.png" 
-              alt="DotR Globe-Orbit Logo" 
-              className="w-full h-full object-contain transition-all duration-500 rounded-lg drop-shadow-[0_0_15px_rgba(0,140,255,0.4)]"
+              src="/logos/DOTR_Full_Color_Logo.png" 
+              alt="DOTR Full Color Logo" 
+              className="w-full h-full object-contain transition-all duration-500"
             />
           </motion.div>
           
@@ -452,7 +452,7 @@ function CreditsSection() {
               DHINOJA OmniTech Resolutions
             </h3>
             <p className="font-sans text-[10px] tracking-[0.2em] text-stone-400 mt-1">
-              {t("global.footer.nickname")} <span className="text-[#d4af37]/80 font-bold group-hover:text-gold-400 transition-colors">DotR</span>
+              {t("global.footer.nickname")} <span className="text-[#d4af37]/80 font-bold group-hover:text-gold-400 transition-colors">DOTR</span>
             </p>
           </div>
         </a>
@@ -482,11 +482,11 @@ function CreditsSection() {
 
           {/* Bottom row: Email (Full width to avoid overflow) */}
           <a 
-            href="mailto:dhinojaomnitechresolutions@gmail.com"
+            href="mailto:hello@dotr.in"
             className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-full border border-gold-400/20 bg-black/40 hover:bg-gold-500 hover:text-stone-950 font-sans text-xs sm:text-[11px] md:text-xs tracking-wider text-[#f7e4a9] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_0_20px_rgba(212,175,55,0.35)] font-semibold cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis"
           >
             <Mail className="w-3.5 h-3.5 flex-shrink-0" />
-            <span className="truncate">dhinojaomnitechresolutions@gmail.com</span>
+            <span className="truncate">hello@dotr.in</span>
           </a>
         </div>
       </motion.div>

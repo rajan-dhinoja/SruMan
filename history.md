@@ -294,3 +294,18 @@
   - Palace Gate Entry screen (`PalaceGateEntry.tsx`): Replaced the solid white logo box with the horizontal transparent logo (`Glossy DOTR Globe-Orbit Logo.png`) inside a translucent dark glassmorphic badge with golden border and cyan glow to match the royal gate aesthetic.
   - Footer Credits Section (`page.tsx`): Streamlined the developer credit card by removing the redundant square crest, cleanly featuring the glowing horizontal transparent logo (`Glossy DOTR Globe-Orbit Logo.png`) above the company details.
   - Favicon & App Icons: Extracted the 3D DotR Globe Emblem to create high-definition multi-resolution icons (`favicon.ico`, `icon.png`, and `apple-icon.png`) for desktop, mobile, and Apple touch devices.
+
+## Prompt 64 (2026-11-20)
+- Updated contact email in the footer credits section ([page.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/page.tsx)) from `dhinojaomnitechresolutions@gmail.com` to `hello@dotr.in`.
+
+## Prompt 65 (2026-11-20)
+- Updated short brand name casing to uppercase `DOTR` across all user-facing instances and image alt tags in the footer section ([page.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/page.tsx)).
+
+## Prompt 66 (2026-11-20)
+- Enhanced the Palace Gate Entry credit badge ([PalaceGateEntry.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/components/PalaceGateEntry.tsx)):
+  - Switched logo to the white background logo (`DOTR_Full_Color_Logo.png`) inside a crisp white pill badge.
+  - Added short brand name badge `DOTR` alongside `DHINOJA OmniTech Resolutions`.
+  - Added interactive direct-contact pills for phone (`+91 8200965524`) and email (`hello@dotr.in`).
+
+## Prompt 67 (2026-11-20)
+- Updated footer credits section ([page.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/page.tsx)) to display the white background logo (`DOTR_Full_Color_Logo.png`) within a gold-bordered white card frame with ambient golden glow.
