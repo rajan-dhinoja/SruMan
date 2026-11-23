@@ -294,7 +294,7 @@ export default function EngagementPage() {
       </AnimatePresence>
 
       <main 
-          className={`relative w-full overflow-x-hidden bg-white ${showGate ? "h-screen overflow-hidden pointer-events-none select-none" : ""}`}
+          className={`relative w-full overflow-x-hidden bg-white transition-opacity duration-700 ${showGate ? "h-screen overflow-hidden pointer-events-none select-none opacity-0 invisible" : "opacity-100 visible"}`}
         >
           {sections.map((sec) => (
             <div

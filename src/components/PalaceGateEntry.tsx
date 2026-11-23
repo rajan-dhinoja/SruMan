@@ -54,28 +54,48 @@ export default function PalaceGateEntry({ onEnter }: PalaceGateEntryProps) {
   useEffect(() => {
     setMounted(true);
     
-    // Preload heavy assets
+    // Preload and explicitly decode heavy assets into GPU memory before revealing
     const imagesToLoad = [
       "/images/dark_purple_without_door.png",
       "/images/royal_door_v2.png",
       "/logos/sruman-logo.png"
     ];
 
-    let loadedCount = 0;
-    const checkAllLoaded = () => {
-      loadedCount++;
-      if (loadedCount === imagesToLoad.length) {
-        // Small delay to ensure smooth transition after network load
-        setTimeout(() => setAssetsLoaded(true), 300);
-      }
-    };
+    let isMounted = true;
 
-    imagesToLoad.forEach(src => {
-      const img = new window.Image();
-      img.src = src;
-      img.onload = checkAllLoaded;
-      img.onerror = checkAllLoaded; // continue even if one fails
+    Promise.all(
+      imagesToLoad.map(src => {
+        return new Promise<void>((resolve) => {
+          const img = new window.Image();
+          img.src = src;
+          const finish = () => {
+            if ("decode" in img) {
+              img.decode().then(() => resolve()).catch(() => resolve());
+            } else {
+              resolve();
+            }
+          };
+          if (img.complete) {
+            finish();
+          } else {
+            img.onload = finish;
+            img.onerror = () => resolve();
+          }
+        });
+      })
+    ).then(() => {
+      if (isMounted) {
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            if (isMounted) setAssetsLoaded(true);
+          }, 150);
+        });
+      }
     });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleOpenGates = () => {
@@ -143,52 +163,55 @@ export default function PalaceGateEntry({ onEnter }: PalaceGateEntryProps) {
 
   // ── GENERATED LUXURY IMAGE PANEL ──────────────────────────────────
   return (
-    <>
-      <AnimatePresence>
-        {!assetsLoaded && (
-          <motion.div
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-[#1a0030]"
-          >
-            <motion.div
-              animate={{ opacity: [0.4, 1, 0.4], scale: [0.95, 1.05, 0.95] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className="relative w-24 h-24 mb-6 flex items-center justify-center"
-            >
-              {/* Outer spinning ring for preloader */}
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          key="palace-gate-overlay"
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.6, ease: "easeInOut" }}
+          className={`fixed inset-0 z-50 flex items-center justify-center bg-[#12021c] overflow-hidden select-none ${isEntering ? "pointer-events-none" : ""}`}
+          style={{ perspective: "1400px", transformStyle: "preserve-3d" }}
+        >
+          {/* Solid Royal Preloader Curtain: stays completely opaque until all images are decoded */}
+          <AnimatePresence>
+            {!assetsLoaded && (
               <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                className="absolute inset-0"
+                key="palace-gate-preloader"
+                initial={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
+                className="absolute inset-0 z-[60] flex flex-col items-center justify-center bg-[#12021c]"
               >
-                <svg viewBox="0 0 100 100" className="w-full h-full fill-none stroke-[#d4af37]" strokeWidth="1">
-                  {[...Array(8)].map((_, i) => (
-                    <circle key={i} cx="50" cy="8" r="2" fill="#d4af37" transform={`rotate(${i * 45} 50 50)`} />
-                  ))}
-                  <circle cx="50" cy="50" r="42" strokeDasharray="4,8" opacity="0.5" />
-                </svg>
+                <motion.div
+                  animate={{ opacity: [0.5, 1, 0.5], scale: [0.95, 1.05, 0.95] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  className="relative w-24 h-24 mb-6 flex items-center justify-center"
+                >
+                  {/* Outer spinning ring for preloader */}
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                    className="absolute inset-0"
+                  >
+                    <svg viewBox="0 0 100 100" className="w-full h-full fill-none stroke-[#d4af37]" strokeWidth="1">
+                      {[...Array(8)].map((_, i) => (
+                        <circle key={i} cx="50" cy="8" r="2" fill="#d4af37" transform={`rotate(${i * 45} 50 50)`} />
+                      ))}
+                      <circle cx="50" cy="50" r="42" strokeDasharray="4,8" opacity="0.5" />
+                    </svg>
+                  </motion.div>
+                  <div className="absolute inset-2 rounded-full border border-[#d4af37]/40 flex items-center justify-center bg-white p-1 shadow-[0_0_20px_rgba(212,175,55,0.4)]">
+                    <img src="/logos/sruman-logo.png" alt="SruMan Logo" className="w-full h-full object-contain" />
+                  </div>
+                </motion.div>
+                <div className="text-[#d4af37] font-serif text-sm tracking-[0.3em] uppercase animate-pulse">
+                  {t("gateEntry.openGateBtn") ? "Loading Palace Gates..." : "Loading Palace Gates..."}
+                </div>
               </motion.div>
-              <div className="absolute inset-2 rounded-full border border-[#d4af37]/40 flex items-center justify-center bg-white p-1">
-                <img src="/logos/sruman-logo.png" alt="SruMan Logo" className="w-full h-full object-contain" />
-              </div>
-            </motion.div>
-            <div className="text-[#d4af37] font-serif text-sm tracking-[0.3em] uppercase animate-pulse">
-              {t("gateEntry.openGateBtn") ? "Loading Palace..." : "Loading Palace..."}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            )}
+          </AnimatePresence>
 
-      <AnimatePresence>
-        {isVisible && assetsLoaded && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
-            className={`fixed inset-0 z-50 flex items-center justify-center bg-transparent overflow-hidden select-none ${isEntering ? "pointer-events-none" : ""}`}
-            style={{ perspective: "1400px", transformStyle: "preserve-3d" }}
-          >
           {/* ═══════════════════════════════════════════════════════════
                CINEMATIC SEQUENCE (all driven by isEntering):
                Phase 1  0.0 – 0.7s  Walk toward door  scale 1 → 1.9
@@ -217,7 +240,7 @@ export default function PalaceGateEntry({ onEnter }: PalaceGateEntryProps) {
             <img 
               src="/images/dark_purple_without_door.png" 
               alt="Palace Background" 
-              className="absolute inset-0 w-full h-full object-fill z-20 pointer-events-none"
+              className="absolute inset-0 w-full h-full object-fill z-20 pointer-events-none select-none"
             />
 
             {/* LEFT DOOR — scaleX 1→0 */}
@@ -235,12 +258,18 @@ export default function PalaceGateEntry({ onEnter }: PalaceGateEntryProps) {
                 height: "51%",
                 zIndex: 21,
                 transformOrigin: "left center",
-                backgroundImage: "url('/images/royal_door_v2.png')",
-                backgroundSize: "200% 100%",
-                backgroundPosition: "left center",
-                backgroundRepeat: "no-repeat",
+                overflow: "hidden",
+                backgroundColor: "#2e1208",
+                boxShadow: "inset -2px 0 10px rgba(0,0,0,0.8)"
               }}
-            />
+            >
+              <img 
+                src="/images/royal_door_v2.png" 
+                alt="Royal Door Left" 
+                className="absolute top-0 left-0 h-full w-[200%] max-w-none object-fill pointer-events-none select-none"
+                style={{ transform: "translateX(0%)" }}
+              />
+            </motion.div>
 
             {/* RIGHT DOOR — scaleX 1→0 */}
             <motion.div
@@ -257,12 +286,18 @@ export default function PalaceGateEntry({ onEnter }: PalaceGateEntryProps) {
                 height: "51%",
                 zIndex: 21,
                 transformOrigin: "right center",
-                backgroundImage: "url('/images/royal_door_v2.png')",
-                backgroundSize: "200% 100%",
-                backgroundPosition: "right center",
-                backgroundRepeat: "no-repeat",
+                overflow: "hidden",
+                backgroundColor: "#2e1208",
+                boxShadow: "inset 2px 0 10px rgba(0,0,0,0.8)"
               }}
-            />
+            >
+              <img 
+                src="/images/royal_door_v2.png" 
+                alt="Royal Door Right" 
+                className="absolute top-0 left-0 h-full w-[200%] max-w-none object-fill pointer-events-none select-none"
+                style={{ transform: "translateX(-50%)" }}
+              />
+            </motion.div>
 
             {/* Sparkle stars (z-21) */}
             <div className="absolute inset-0 pointer-events-none z-21 overflow-hidden">
@@ -412,8 +447,7 @@ export default function PalaceGateEntry({ onEnter }: PalaceGateEntryProps) {
           </motion.div>
 
         </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+      )}
+    </AnimatePresence>
   );
 }

@@ -1,30 +1,41 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import pool from "@/lib/db";
+import { RowDataPacket, ResultSetHeader } from "mysql2";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-// Initialize Supabase client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+interface WishRow extends RowDataPacket {
+  id: string;
+  name: string;
+  message: string;
+  date: string | null;
+  theme: string | null;
+  created_at: Date;
+}
 
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-export async function GET(request: NextRequest) {
+// Resilient query wrapper that auto-retries once on socket/network drops
+async function queryWithRetry<T>(sql: string, params: (string | number | null)[] = []): Promise<[T, unknown]> {
   try {
-    const { data: wishes, error } = await supabase
-      .from("wishes")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("Error fetching wishes from Supabase:", error);
-      return NextResponse.json([]); 
+    return await pool.query(sql, params) as unknown as [T, unknown];
+  } catch (err: unknown) {
+    const error = err as { code?: string };
+    if (error?.code === "ECONNRESET" || error?.code === "PROTOCOL_CONNECTION_LOST") {
+      console.warn("MySQL connection reset by host, automatically retrying query...");
+      return await pool.query(sql, params) as unknown as [T, unknown];
     }
+    throw err;
+  }
+}
 
-    return NextResponse.json(wishes || []);
+export async function GET() {
+  try {
+    const [rows] = await queryWithRetry<WishRow[]>(
+      "SELECT id, name, message, date, theme, created_at FROM wishes ORDER BY created_at DESC"
+    );
+    return NextResponse.json(rows || []);
   } catch (error) {
-    console.error("Error in GET wishes:", error);
+    console.error("Error fetching wishes from MySQL:", error);
     return NextResponse.json([]);
   }
 }
@@ -48,18 +59,24 @@ export async function POST(request: NextRequest) {
       theme: newWish.theme || "gold",
     };
 
-    const { data, error } = await supabase
-      .from("wishes")
-      .insert([wish])
-      .select()
-      .single();
+    await queryWithRetry<ResultSetHeader>(
+      `INSERT INTO wishes (id, name, message, date, theme)
+       VALUES (?, ?, ?, ?, ?)
+       ON DUPLICATE KEY UPDATE 
+         name = VALUES(name),
+         message = VALUES(message),
+         date = VALUES(date),
+         theme = VALUES(theme)`,
+      [wish.id, wish.name, wish.message, wish.date, wish.theme]
+    );
 
-    if (error) {
-      console.error("Error inserting wish into Supabase:", error);
-      return NextResponse.json({ error: "Failed to add wish" }, { status: 500 });
-    }
+    const [rows] = await queryWithRetry<WishRow[]>(
+      "SELECT id, name, message, date, theme, created_at FROM wishes WHERE id = ? LIMIT 1",
+      [wish.id]
+    );
 
-    return NextResponse.json(data, { status: 201 });
+    const result = rows[0] || wish;
+    return NextResponse.json(result, { status: 201 });
   } catch (error) {
     console.error("Error in POST wish:", error);
     return NextResponse.json({ error: "Failed to add wish" }, { status: 500 });
@@ -75,15 +92,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "Wish ID is required" }, { status: 400 });
     }
 
-    const { error } = await supabase
-      .from("wishes")
-      .delete()
-      .eq("id", wishId);
-
-    if (error) {
-      console.error("Error deleting wish from Supabase:", error);
-      return NextResponse.json({ error: "Failed to delete wish" }, { status: 500 });
-    }
+    await queryWithRetry<ResultSetHeader>("DELETE FROM wishes WHERE id = ?", [wishId]);
 
     return NextResponse.json({ success: true, wishId });
   } catch (error) {
@@ -96,9 +105,22 @@ export async function PUT(request: NextRequest) {
   try {
     const updatedWish = await request.json();
 
-    // If an array is sent, assume it's a full list replacement (for reordering)
+    // If an array is sent, handle list reordering or batch update
     if (Array.isArray(updatedWish)) {
-      console.warn("Array PUT is not fully supported with Supabase yet. Returning array.");
+      for (const item of updatedWish) {
+        if (item && item.id) {
+          await queryWithRetry<ResultSetHeader>(
+            `INSERT INTO wishes (id, name, message, date, theme)
+             VALUES (?, ?, ?, ?, ?)
+             ON DUPLICATE KEY UPDATE 
+               name = VALUES(name),
+               message = VALUES(message),
+               date = VALUES(date),
+               theme = VALUES(theme)`,
+            [item.id, item.name, item.message, item.date || "હમણાં જ", item.theme || "gold"]
+          );
+        }
+      }
       return NextResponse.json(updatedWish);
     }
 
@@ -106,26 +128,40 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: "Wish ID is required" }, { status: 400 });
     }
 
-    const updateData: any = {};
-    if (updatedWish.name) updateData.name = updatedWish.name;
-    if (updatedWish.message) updateData.message = updatedWish.message;
-    if (updatedWish.theme) updateData.theme = updatedWish.theme;
-    
-    // date logic could be applied here as well if they modify it
+    const updates: string[] = [];
+    const values: (string | null)[] = [];
 
-    const { data, error } = await supabase
-      .from("wishes")
-      .update(updateData)
-      .eq("id", updatedWish.id)
-      .select()
-      .single();
-
-    if (error) {
-      console.error("Error updating wish in Supabase:", error);
-      return NextResponse.json({ error: "Failed to update wish" }, { status: 500 });
+    if (updatedWish.name !== undefined) {
+      updates.push("name = ?");
+      values.push(updatedWish.name);
+    }
+    if (updatedWish.message !== undefined) {
+      updates.push("message = ?");
+      values.push(updatedWish.message);
+    }
+    if (updatedWish.theme !== undefined) {
+      updates.push("theme = ?");
+      values.push(updatedWish.theme);
+    }
+    if (updatedWish.date !== undefined) {
+      updates.push("date = ?");
+      values.push(updatedWish.date);
     }
 
-    return NextResponse.json(data);
+    if (updates.length > 0) {
+      values.push(updatedWish.id);
+      await queryWithRetry<ResultSetHeader>(
+        `UPDATE wishes SET ${updates.join(", ")} WHERE id = ?`,
+        values
+      );
+    }
+
+    const [rows] = await queryWithRetry<WishRow[]>(
+      "SELECT id, name, message, date, theme, created_at FROM wishes WHERE id = ? LIMIT 1",
+      [updatedWish.id]
+    );
+
+    return NextResponse.json(rows[0] || updatedWish);
   } catch (error) {
     console.error("Error in PUT wish:", error);
     return NextResponse.json({ error: "Failed to update wish" }, { status: 500 });

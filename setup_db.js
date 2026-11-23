@@ -1,63 +1,40 @@
-
-const { Client } = require('pg');
+const mysql = require('mysql2/promise');
 const fs = require('fs');
 
 async function setupDatabase() {
-  const connectionString = process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_URL;
-  if (!connectionString) {
-    console.error("Missing POSTGRES_URL in environment");
-    process.exit(1);
-  }
-
-  const client = new Client({
-    connectionString,
+  const connectionConfig = {
+    host: process.env.MYSQL_HOST || 'srv1859.hstgr.io',
+    port: parseInt(process.env.MYSQL_PORT || '3306', 10),
+    user: process.env.MYSQL_USER || 'u153430321_sruman',
+    password: process.env.MYSQL_PASSWORD || 'SruMan27022027',
+    database: process.env.MYSQL_DATABASE || 'u153430321_sruman_db',
+    charset: 'utf8mb4',
     ssl: { rejectUnauthorized: false }
-  });
+  };
 
+  let connection;
   try {
-    await client.connect();
-    console.log("Connected to PostgreSQL");
+    connection = await mysql.createConnection(connectionConfig);
+    console.log("Connected to MySQL");
 
     // Create table
-    await client.query(`
+    await connection.execute(`
       CREATE TABLE IF NOT EXISTS wishes (
-        id text PRIMARY KEY,
-        name text NOT NULL,
-        message text NOT NULL,
-        date text,
-        theme text,
-        created_at timestamp with time zone default timezone('utc'::text, now()) not null
-      );
+        id VARCHAR(255) PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        message TEXT NOT NULL,
+        date VARCHAR(255),
+        theme VARCHAR(50) DEFAULT 'gold',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
-    console.log("Created table 'wishes'");
-
-    // Load data from data/wishes.json
-    let wishes = [];
-    try {
-      const data = fs.readFileSync('data/wishes.json', 'utf8');
-      wishes = JSON.parse(data);
-    } catch (err) {
-      console.log("Could not read data/wishes.json or it's empty:", err.message);
-    }
-
-    if (wishes.length > 0) {
-      console.log(`Migrating ${wishes.length} wishes...`);
-      for (const wish of wishes) {
-        // Insert into table, ignoring on conflict
-        await client.query(
-          `INSERT INTO wishes (id, name, message, date, theme)
-           VALUES ($1, $2, $3, $4, $5)
-           ON CONFLICT (id) DO NOTHING`,
-          [wish.id, wish.name, wish.message, wish.date, wish.theme]
-        );
-      }
-      console.log("Migration complete.");
-    }
-
+    console.log("Created/verified table 'wishes'");
   } catch (error) {
     console.error("Error setting up database:", error);
   } finally {
-    await client.end();
+    if (connection) {
+      await connection.end();
+    }
   }
 }
 

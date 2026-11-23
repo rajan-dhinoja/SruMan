@@ -309,3 +309,47 @@
 
 ## Prompt 67 (2026-11-20)
 - Updated footer credits section ([page.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/page.tsx)) to display the white background logo (`DOTR_Full_Color_Logo.png`) within a gold-bordered white card frame with ambient golden glow.
+
+## Prompt 68 (2026-11-23)
+- Completely redesigned the SruMan Hub Landing Page ([page.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/page.tsx)) per user specifications:
+  - **Wedding Section Teaser**: Removed the live countdown timer and all URL / portal entry links. Converted it into a royal informative announcement box displaying *"Launching Wedding Portal Soon"* with *"Under Royal Preparation • Stay Tuned"* status.
+  - **Redesigned Engagement Ceremony Showcase**: Elevated into a centerpiece celebration card featuring:
+    - The authentic 5-segment live countdown (Months, Days, Hours, Minutes, Seconds) replicating the exact calculation and layout from the engagement portal.
+    - Auspicious celebration fast facts (Date: 18 Aug 2026, Shravan Sud-6; Muhurat: 09:00 AM; Venue: Parishram The Lawns, Gondal).
+    - Interactive 4-tab Feature Explorer (Royal Palace Gate, Blessings Guestbook, Nimantrak Patrika, Multilingual Experience) with dynamic descriptions.
+    - Celebratory confetti triggers on the magnetic "Enter Engagement Portal & Relive Memories" CTA and standalone celebration button.
+  - **Redesigned DOTR Company Section**: Transformed developer credits into an interactive luxury tech showcase:
+    - High-definition white brand emblem frame for `DOTR_Full_Color_Logo.png` with 3D hover feedback and golden borders.
+    - Company title and brand badge `DHINOJA OmniTech Resolutions (DOTR)`.
+    - Three capability highlight cards (Custom Web Platforms, Luxury Motion & 3D, Enterprise Solutions).
+    - Interactive Contact Action Hub featuring direct links to `https://dotr.in`, `tel:+918200965524`, `mailto:hello@dotr.in`, and a 1-click clipboard copy with animated "Copied!" toast feedback.
+
+## Prompt 69 (2026-11-23)
+- Fixed palace gate door rendering and background bleed glitch on `/engagement`:
+  - **GPU Image Preload & Decode**: Implemented `img.decode()` with `Promise.all` in [PalaceGateEntry.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/components/PalaceGateEntry.tsx) so gate background, door textures, and monogram are completely decoded before the preloader curtain is removed.
+  - **Opaque Backdrop & Preloader Stacking**: Replaced `bg-transparent` with a continuous solid royal background (`#12021c`) and nested the preloader overlay directly above the gate at `z-[60]` to eliminate the crossfade transparency gap.
+  - **Reliable Door Rendering**: Transitioned door leaves to `overflow-hidden` containers holding high-definition `<img>` elements with dark wood fallback and exact geometry (`translateX(0%)` / `translateX(-50%)`) for instant, crisp rendering and smooth door-opening animations.
+  - **Suppressed Background Content Bleed**: Set `<main>` in [page.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/engagement/page.tsx) to `opacity-0 invisible` while `showGate` is true, ensuring inner deities, mantras, and white background never bleed through before gate opening.
+
+## Prompt 70 (2026-11-23)
+- Configured English (`en`) as the default language for the engagement portal:
+  - Updated initial state in [LanguageContext.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/context/LanguageContext.tsx) from `"gu"` to `"en"`.
+  - Updated default document language in [layout.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/layout.tsx) from `lang="gu"` to `lang="en"`.
+
+## Prompt 71 (2026-11-23)
+- Updated top divine invocation on the SruMan Hub Landing Page ([page.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/page.tsx)):
+  - Replaced the placeholder `|| શ્રી ગણેશાય નમઃ || શ્રી દ્વારકાધીશાય નમઃ ||` with the authentic three family deity mantras from the engagement portal:
+    `|| શ્રીનાથજી બાવા સદા બિરાજમાન છે. || ♦ || શ્રી ગણેશાય નમઃ || ♦ || શ્રી કુળદેવીમાં સત્ય છે. ||`.
+  - Maintained responsive wrapping and royal golden glow drop-shadow styling.
+
+## Prompt 72 (2026-11-23)
+- Redesigned the top divine deities header on the SruMan Hub Landing Page ([page.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/page.tsx)) to match the full 3-column layout of the engagement portal (`Welcome.tsx`):
+  - **Left**: Lord Shreenathji with mantra `|| શ્રીનાથજી બાવા સદા બિરાજમાન છે. ||` and image (`/images/shreenathji.png`).
+  - **Center**: Lord Ganesha with mantra `|| શ્રી ગણેશાય નમઃ ||` and image (`/images/ChatGPT Image Jun 23, 2026, 12_21_15 AM.png`).
+  - **Right**: Goddess Kuldevi Mataji with mantra `|| શ્રી કુળદેવીમાં સત્ય છે. ||` and image (`/images/Mataji-removebg.png`).
+  - Implemented responsive desktop (3-column grid) and mobile layouts with ambient gold & purple auras, proper spacing, and elegant drop-shadows.
+
+## Prompt 73 (2026-11-23)
+- Fixed excessive white padding and sizing for the DOTR logo in the footer developer section ([page.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/page.tsx)):
+  - Generated a clean trimmed version of the logo (`/logos/DOTR_Full_Color_Logo_Trimmed.png`) removing over 450px of empty baked-in vertical padding from the original image.
+  - Adjusted the brand card frame dimensions to `w-60 sm:w-72 md:w-80 h-20 sm:h-22 md:h-24` with `px-4 py-2` padding, matching the natural 3.48:1 wide aspect ratio of the brand mark so the logo is displayed prominently, boldly, and without unnecessary white borders.

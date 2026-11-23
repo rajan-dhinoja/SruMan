@@ -6,6 +6,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## Strict Single-Project Automatic Startup Directive
 - **Strict Scope Boundary**: ONLY operate within the currently opened workspace directory. NEVER touch, trigger, or launch tasks or processes belonging to any other project or outside directory.
+- **Immediate Execution**: Always run the project startup/dev command (`npm run dev`) immediately in the background without asking the user whenever this project is opened or active in Antigravity.
 - **Project-Specific Setup**: When working in the current workspace, check if `.vscode/tasks.json` exists with automatic startup configured. If not, inspect only the current project's configuration (e.g. `package.json`) and create:
   1. `.vscode/tasks.json` configured strictly for this project's start/dev scripts with `runOptions: { "runOn": "folderOpen" }`.
   2. `.vscode/settings.json` with `"task.allowAutomaticTasks": "on"`.
