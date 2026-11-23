@@ -1,495 +1,330 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Volume2, VolumeX, Globe, Mail, Phone } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { Sparkles, Heart, ArrowRight, Globe, Phone } from "lucide-react";
 import SparklesCanvas from "@/components/SparklesCanvas";
-import Welcome from "@/components/Welcome";
-import Couple from "@/components/Couple";
-import MeetCouple from "@/components/MeetCouple";
-import Nimantrak from "@/components/Nimantrak";
-import EventDetails from "@/components/EventDetails";
-import Blessings from "@/components/Blessings";
-import PalaceGateEntry from "@/components/PalaceGateEntry";
-import { useLanguage } from "@/context/LanguageContext";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
-import confetti from "canvas-confetti";
 
-export default function Home() {
-  const [showGate, setShowGate] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [activeSection, setActiveSection] = useState(0);
+export default function SruManHub() {
+  // Configurable Wedding Target Date (December 12, 2026 10:00:00)
+  const targetWeddingDate = new Date("2026-12-12T10:00:00");
 
-  const triggerCelebration = () => {
-    // 1. Crackers / Fireworks (multiple bursts from left and right top corners)
-    const duration = 3.5 * 1000;
-    const animationEnd = Date.now() + duration;
-    const defaults = { startVelocity: 25, spread: 360, ticks: 80, zIndex: 100 };
-
-    const randomInRange = (min: number, max: number) => {
-      return Math.random() * (max - min) + min;
-    };
-
-    const interval = setInterval(function() {
-      const timeLeft = animationEnd - Date.now();
-
-      if (timeLeft <= 0) {
-        return clearInterval(interval);
-      }
-
-      const particleCount = 40 * (timeLeft / duration);
-      // cracker bursts
-      confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
-      confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
-    }, 250);
-
-    // 2. Flower shower (falling flowers and ribbons from top)
-    try {
-      const flower1 = (confetti as any).shapeFromText({ text: "🌸" });
-      const flower2 = (confetti as any).shapeFromText({ text: "🌹" });
-      const flower3 = (confetti as any).shapeFromText({ text: "🌺" });
-      const flower4 = (confetti as any).shapeFromText({ text: "🏵️" });
-      const flower5 = (confetti as any).shapeFromText({ text: "💐" });
-      const ribbon1 = (confetti as any).shapeFromText({ text: "🎀" });
-      const ribbon2 = (confetti as any).shapeFromText({ text: "🎗️" });
-
-      // Flower shower above Lord Shreenathji (Left side, x: 0.25)
-      confetti({
-        particleCount: 150, // High density
-        spread: 90,
-        origin: { y: -0.1, x: 0.25 },
-        shapes: [flower1, flower2, flower3, flower4, flower5, ribbon1, ribbon2],
-        scalar: 2.8,
-        zIndex: 100,
-        gravity: 0.75, // gentle fall
-        drift: 0.4,
-      });
-
-      // Flower shower in the center/right (x: 0.6)
-      confetti({
-        particleCount: 120,
-        spread: 100,
-        origin: { y: -0.1, x: 0.6 },
-        shapes: [flower1, flower2, flower3, flower4, flower5, ribbon1, ribbon2],
-        scalar: 2.5,
-        zIndex: 100,
-        gravity: 0.8,
-        drift: 0.2,
-      });
-    } catch (err) {
-      console.warn("confetti.shapeFromText not supported, falling back to standard confetti", err);
-      confetti({
-        particleCount: 120,
-        spread: 120,
-        origin: { y: 0, x: 0.5 },
-        colors: ['#ffb7c5', '#ff9999', '#ffcc00', '#e0b0ff', '#5e1f70', '#d4af37'],
-        scalar: 1.5,
-        zIndex: 100
-      });
-    }
-
-    // 3. Side ribbon streams (launching from bottom corners)
-    const end = Date.now() + (3 * 1000);
-    
-    (function frame() {
-      confetti({
-        particleCount: 4,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0, y: 0.9 },
-        colors: ['#5e1f70', '#d4af37', '#e0b0ff', '#f7e4a9'],
-        zIndex: 100
-      });
-      confetti({
-        particleCount: 4,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1, y: 0.9 },
-        colors: ['#5e1f70', '#d4af37', '#e0b0ff', '#f7e4a9'],
-        zIndex: 100
-      });
-
-      if (Date.now() < end) {
-        requestAnimationFrame(frame);
-      }
-    }());
-  };
-  const { t } = useLanguage();
-  
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const gainNodeRef = useRef<GainNode | null>(null);
-  const synthLoopIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  const containerRef = useRef<HTMLDivElement>(null);
-  const activeSectionRef = useRef(activeSection);
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
 
   useEffect(() => {
-    activeSectionRef.current = activeSection;
-  }, [activeSection]);
+    const calculateTime = () => {
+      const now = new Date();
+      const difference = targetWeddingDate.getTime() - now.getTime();
 
-  // Web Audio Synthesizer for high-end romantic arpeggios
-  const startSynth = () => {
-    try {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-      if (!AudioContextClass) return;
-
-      const ctx = new AudioContextClass();
-      audioContextRef.current = ctx;
-
-      const gainNode = ctx.createGain();
-      // Extremely low, pleasant background level
-      gainNode.gain.setValueAtTime(0.06, ctx.currentTime);
-      gainNode.connect(ctx.destination);
-      gainNodeRef.current = gainNode;
-
-      // Chord Progression: Cmaj7 -> Am7 -> Fmaj7 -> G6
-      const chords = [
-        [261.63, 329.63, 392.00, 493.88], // C4, E4, G4, B4
-        [220.00, 261.63, 329.63, 392.00], // A3, C4, E4, G4
-        [174.61, 220.00, 261.63, 329.63], // F3, A3, C4, E4
-        [196.00, 246.94, 293.66, 392.00], // G3, B3, D4, G4
-      ];
-
-      let chordIdx = 0;
-      let noteIdx = 0;
-
-      const playNote = () => {
-        if (ctx.state === "suspended") return;
-
-        const freq = chords[chordIdx][noteIdx];
-        
-        // Pluck Oscillator
-        const osc = ctx.createOscillator();
-        const oscGain = ctx.createGain();
-        
-        // Triangle wave for smooth, warm flute/harp tone
-        osc.type = "triangle";
-        osc.frequency.setValueAtTime(freq, ctx.currentTime);
-        
-        // Pluck Envelope
-        oscGain.gain.setValueAtTime(0, ctx.currentTime);
-        oscGain.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.05);
-        oscGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.8);
-        
-        osc.connect(oscGain);
-        oscGain.connect(gainNode);
-        
-        osc.start();
-        osc.stop(ctx.currentTime + 2);
-
-        // Schedule next note in arpeggio
-        noteIdx = (noteIdx + 1) % 4;
-        if (noteIdx === 0) {
-          chordIdx = (chordIdx + 1) % chords.length;
-        }
-      };
-
-      // Play immediately
-      playNote();
-      
-      // Schedule looping notes (every 650ms for slow romantic flow)
-      synthLoopIntervalRef.current = setInterval(playNote, 650);
-      setIsPlaying(true);
-    } catch (e) {
-      console.warn("Web Audio failed to start:", e);
-    }
-  };
-
-  const stopSynth = () => {
-    if (synthLoopIntervalRef.current) {
-      clearInterval(synthLoopIntervalRef.current);
-      synthLoopIntervalRef.current = null;
-    }
-    if (audioContextRef.current) {
-      audioContextRef.current.close();
-      audioContextRef.current = null;
-    }
-    setIsPlaying(false);
-  };
-
-  const toggleMusic = () => {
-    if (isPlaying) {
-      stopSynth();
-    } else {
-      if (audioContextRef.current?.state === "suspended") {
-        audioContextRef.current.resume();
-        setIsPlaying(true);
-      } else {
-        startSynth();
-      }
-    }
-  };
-
-  // Cleanup synthesizer loop on unmount
-  useEffect(() => {
-    return () => {
-      if (synthLoopIntervalRef.current) {
-        clearInterval(synthLoopIntervalRef.current);
+      if (difference > 0) {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60),
+        });
       }
     };
+
+    calculateTime();
+    const interval = setInterval(calculateTime, 1000);
+    return () => clearInterval(interval);
   }, []);
 
-  const sections = React.useMemo(() => [
-    { id: "welcome", name: t("global.navDots.welcome"), component: <Welcome /> },
-    { id: "couple", name: t("global.navDots.couple"), component: <Couple /> },
-    { id: "nimantrak", name: t("global.navDots.nimantrak"), component: <Nimantrak /> },
-    { id: "meet-couple", name: t("global.navDots.meetCouple"), component: <MeetCouple /> },
-    { id: "events", name: t("global.navDots.events"), component: <EventDetails /> },
-    { 
-      id: "blessings", 
-      name: t("global.navDots.blessings"), 
-      component: <Blessings />
-    },
-    {
-      id: "credits",
-      name: t("global.navDots.credits"),
-      component: <CreditsSection />
-    }
-  ], [t]);
-
-  // Monitor scroll positioning to update active dot
-  const handleScroll = () => {
-    const scrollPos = window.scrollY + window.innerHeight / 3;
-    
-    sections.forEach((sec, idx) => {
-      const element = document.getElementById(
-        sec.id === "events" ? "event-section" : `${sec.id}-section`
-      );
-      if (element) {
-        const top = element.offsetTop;
-        const height = element.offsetHeight;
-        if (scrollPos >= top && scrollPos < top + height) {
-          if (idx !== activeSectionRef.current) {
-            setActiveSection(idx);
-          }
-        }
-      }
-    });
-  };
-
-  useEffect(() => {
-    if (showGate) return;
-    window.addEventListener("scroll", handleScroll);
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [showGate]);
-
-  const scrollToSection = (idx: number) => {
-    const sec = sections[idx];
-    const element = document.getElementById(
-      sec.id === "events" ? "event-section" : `${sec.id}-section`
-    );
-    if (element) {
-      element.scrollIntoView({
-        behavior: "smooth"
-      });
-    }
-  };
-
   return (
-    <>
-      {/* 60fps Ambient Sparkles & Falling Petals */}
+    <div className="relative min-h-screen bg-gradient-to-b from-[#14031c] via-[#21072b] to-[#0a000f] text-[#fbf9fb] overflow-x-hidden select-none">
+      {/* 60fps Ambient Gold Sparkles */}
       <SparklesCanvas />
 
-      {/* Royal Gate Opening Entrance */}
-      <AnimatePresence>
-        {showGate && <PalaceGateEntry onEnter={() => {
-          setShowGate(false);
-          triggerCelebration();
-          // startSynth();
-        }} />}
-      </AnimatePresence>
-
-      <main 
-          className={`relative w-full overflow-x-hidden bg-white ${showGate ? "h-screen overflow-hidden pointer-events-none select-none" : ""}`}
-        >
-          {sections.map((sec) => (
-            <div
-              key={sec.id}
-              id={sec.id === "events" ? "event-section" : `${sec.id}-section`}
-              className="w-full relative"
-            >
-              {sec.component}
-            </div>
-          ))}
-        </main>
-
-      {/* Navigation Dot Indicators */}
-      {!showGate && (
-        <div className="fixed right-4 md:right-8 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-40 bg-[#fbf9fb]/40 p-2 md:p-3 rounded-full backdrop-blur-md border border-purple-300/20 shadow-lg">
-          {sections.map((sec, idx) => (
-            <button
-              key={sec.id}
-              onClick={() => scrollToSection(idx)}
-              className={`group relative flex items-center justify-center w-3 h-3 md:w-4 md:h-4 rounded-full transition-all duration-300 ${
-                idx === activeSection ? "bg-[#5e1f70] scale-125" : "bg-purple-300/40 hover:bg-purple-500 hover:scale-110"
-              }`}
-              title={sec.name}
-            >
-              <span className="absolute right-8 px-2 py-1 rounded bg-stone-900/90 text-gold-200 font-serif text-[10px] sm:text-xs opacity-0 pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 translate-x-2 transition-all duration-300 whitespace-nowrap shadow-md">
-                {sec.name}
-              </span>
-            </button>
-          ))}
-        </div>
-      )}
-
-      <LanguageSwitcher />
-    </>
-  );
-}
-
-function CreditsSection() {
-  const { t, formatNumber } = useLanguage();
-  return (
-    <div id="credits-section" className="w-full bg-gradient-to-b from-[#1a0525] via-[#110119] to-[#08000c] text-center flex flex-col items-center gap-12 px-6 py-10 md:py-16 pb-20 md:pb-28 relative overflow-hidden select-none">
       {/* Decorative Royal Corner Elements */}
-      <div className="absolute inset-0 pointer-events-none opacity-25">
-        <div className="absolute top-0 left-0 w-36 h-36 md:w-48 md:h-48 border-l border-t border-gold-400/25 rounded-tl-[100px] m-4 md:m-6" />
-        <div className="absolute top-0 right-0 w-36 h-36 md:w-48 md:h-48 border-r border-t border-gold-400/25 rounded-tr-[100px] m-4 md:m-6" />
-        <div className="absolute bottom-0 left-0 w-36 h-36 md:w-48 md:h-48 border-l border-b border-gold-400/25 rounded-bl-[100px] m-4 md:m-6" />
-        <div className="absolute bottom-0 right-0 w-36 h-36 md:w-48 md:h-48 border-r border-b border-gold-400/25 rounded-br-[100px] m-4 md:m-6" />
-        
-        {/* Subtle radial lights */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#5e1f70]/5 rounded-full filter blur-[120px]" />
+      <div className="absolute inset-0 pointer-events-none opacity-20 z-0">
+        <div className="absolute top-0 left-0 w-36 h-36 md:w-56 md:h-56 border-l-2 border-t-2 border-amber-400/40 rounded-tl-[120px] m-4 md:m-8" />
+        <div className="absolute top-0 right-0 w-36 h-36 md:w-56 md:h-56 border-r-2 border-t-2 border-amber-400/40 rounded-tr-[120px] m-4 md:m-8" />
+        <div className="absolute bottom-0 left-0 w-36 h-36 md:w-56 md:h-56 border-l-2 border-b-2 border-amber-400/40 rounded-bl-[120px] m-4 md:m-8" />
+        <div className="absolute bottom-0 right-0 w-36 h-36 md:w-56 md:h-56 border-r-2 border-b-2 border-amber-400/40 rounded-br-[120px] m-4 md:m-8" />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-gradient-to-tr from-amber-500/10 via-purple-600/10 to-transparent rounded-full filter blur-[140px]" />
       </div>
 
-      {/* Top Header Group */}
-      <motion.div 
-        className="mt-4 flex flex-col items-center"
-      >
-        <span className="font-serif text-base md:text-xl tracking-[0.25em] text-[#d4af37] uppercase mb-2 font-black drop-shadow-[0_0_12px_rgba(212,175,55,0.7)]">
-          {t("global.footer.thankYouForVisiting")}
-        </span>
-        <div className="w-16 h-[1px] bg-gold-400/20" />
-      </motion.div>
-
-      {/* Central Couple & Logo Segment */}
-      <div className="flex flex-col items-center gap-6 my-auto z-10">
-        {/* Royal Monogram Crest */}
+      <div className="relative z-10 max-w-5xl mx-auto px-4 py-16 sm:py-20 flex flex-col items-center">
+        {/* Divine Invocation */}
         <motion.div
-          className="relative w-32 h-32 md:w-40 md:h-40 flex items-center justify-center rounded-full border border-gold-400/15 bg-black/50 backdrop-blur-sm"
+          initial={{ opacity: 0, y: -15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-6"
         >
-          {/* Animated Outer Gold Ring */}
-          <motion.div 
+          <span className="font-serif text-xs sm:text-sm md:text-base tracking-[0.3em] text-amber-300 uppercase font-bold drop-shadow-[0_0_12px_rgba(212,175,55,0.6)]">
+            || શ્રી ગણેશાય નમઃ || શ્રી દ્વારકાધીશાય નમઃ ||
+          </span>
+        </motion.div>
+
+        {/* Grand Monogram Crest */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.9, delay: 0.1 }}
+          className="relative w-32 h-32 sm:w-40 sm:h-40 flex items-center justify-center rounded-full border border-amber-400/30 bg-black/60 backdrop-blur-md shadow-[0_0_40px_rgba(212,175,55,0.35)]"
+        >
+          {/* Outer rotating dashed ring */}
+          <motion.div
             animate={{ rotate: 360 }}
-            transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-2 border border-dashed border-gold-400/30 rounded-full"
+            transition={{ duration: 45, repeat: Infinity, ease: "linear" }}
+            className="absolute inset-1.5 border border-dashed border-amber-400/40 rounded-full"
           />
-          {/* Pulsating Inner Light */}
-          <motion.div 
-            animate={{ opacity: [0.2, 0.5, 0.2] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute inset-4 bg-gradient-to-br from-[#d4af37]/5 to-[#5e1f70]/10 rounded-full filter blur-sm"
-          />
-          
-          {/* SruMan Logo Image with Shiny Shadows */}
-          <motion.div 
-            animate={{ 
+
+          {/* Shimmering logo inner */}
+          <motion.div
+            animate={{
               boxShadow: [
-                "0 0 15px rgba(212, 175, 55, 0.4), 0 0 30px rgba(94, 31, 112, 0.3), inset 0 2px 8px rgba(255,255,255,1)",
-                "0 0 30px rgba(212, 175, 55, 0.8), 0 0 50px rgba(94, 31, 112, 0.6), inset 0 2px 8px rgba(255,255,255,1)",
-                "0 0 15px rgba(212, 175, 55, 0.4), 0 0 30px rgba(94, 31, 112, 0.3), inset 0 2px 8px rgba(255,255,255,1)"
-              ]
+                "0 0 20px rgba(212, 175, 55, 0.4), inset 0 2px 8px rgba(255,255,255,0.9)",
+                "0 0 35px rgba(212, 175, 55, 0.8), inset 0 2px 8px rgba(255,255,255,0.9)",
+                "0 0 20px rgba(212, 175, 55, 0.4), inset 0 2px 8px rgba(255,255,255,0.9)",
+              ],
             }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute inset-4 md:inset-5 rounded-full flex items-center justify-center bg-white z-10 border-2 border-gold-400/50"
+            transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute inset-3 rounded-full flex items-center justify-center bg-white border-2 border-amber-400/60 overflow-hidden"
           >
-            <div className="relative w-full h-full p-1 flex items-center justify-center">
-              <img 
-                src="/logos/sruman-logo.png" 
-                alt="SruMan Logo" 
-                className="w-full h-full object-contain scale-[1.18] transition-transform duration-500 hover:scale-[1.26]"
-              />
-            </div>
+            <img
+              src="/logos/sruman-logo.png"
+              alt="SruMan Logo"
+              className="w-full h-full object-contain p-2 scale-110 hover:scale-120 transition-transform duration-500"
+            />
           </motion.div>
         </motion.div>
 
-        {/* Date / Location Details */}
-        <motion.p
-          className="font-serif text-base md:text-lg tracking-[0.2em] text-[#f7e4a9]/85 font-light"
+        {/* Title & Tagline */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="text-center mt-6"
         >
-          {t("global.footer.dateAndPlace")}
-        </motion.p>
-      </div>
+          <span className="font-serif text-xs sm:text-sm tracking-[0.35em] text-amber-300/80 uppercase font-semibold">
+            Welcome To The Celebrations of
+          </span>
+          <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-bold tracking-wide mt-2 text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-[#f7e4a9] to-amber-300 drop-shadow-[0_2px_15px_rgba(212,175,55,0.4)]">
+            Srushti & Aman
+          </h1>
+          <p className="font-alex-brush text-2xl sm:text-4xl text-amber-200/90 mt-2 font-normal">
+            "Two hearts, two souls, one eternal journey of love"
+          </p>
+          <p className="font-sans text-xs sm:text-sm text-stone-300/80 max-w-lg mx-auto mt-3 tracking-wider leading-relaxed">
+            Choose an experience below to discover our celebrations, wedding festivities, itineraries, and cherished memories.
+          </p>
+        </motion.div>
 
-      {/* Animated Developer Credits Card */}
-      <motion.div
-        className="w-full max-w-lg bg-[#fbf9fb]/[0.02] backdrop-blur-md rounded-[32px] border border-gold-400/10 p-6 md:p-8 flex flex-col items-center shadow-[0_12px_40px_rgba(0,0,0,0.6)] mb-4 z-10"
-      >
-        <span className="font-serif text-sm md:text-base tracking-[0.2em] text-[#d4af37] mb-5 font-bold drop-shadow-[0_0_10px_rgba(212,175,55,0.6)] text-center">
-          {t("global.footer.craftedBy")}
-        </span>
-
-        {/* Logo and Company Name (Interactive Group) */}
-        <a 
-          href="http://dotr.in" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="group flex flex-col items-center gap-3.5 cursor-pointer mb-6"
-        >
-          {/* White Background Rectangular Logo Frame */}
-          <motion.div 
-            animate={{ 
-              boxShadow: [
-                "0 0 15px rgba(212,175,55,0.25), inset 0 2px 6px rgba(255,255,255,0.8)",
-                "0 0 25px rgba(212,175,55,0.5), inset 0 2px 6px rgba(255,255,255,0.8)",
-                "0 0 15px rgba(212,175,55,0.25), inset 0 2px 6px rgba(255,255,255,0.8)"
-              ]
-            }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            className="relative w-48 h-24 md:w-60 md:h-30 rounded-2xl bg-white p-3 border-2 border-[#d4af37]/60 flex items-center justify-center group-hover:scale-105 group-hover:border-[#d4af37] transition-all duration-500 shadow-[0_0_20px_rgba(212,175,55,0.3)] overflow-hidden"
-          >
-            <img 
-              src="/logos/DOTR_Full_Color_Logo.png" 
-              alt="DOTR Full Color Logo" 
-              className="w-full h-full object-contain transition-all duration-500"
-            />
-          </motion.div>
+        {/* Milestone Cards Container */}
+        <div className="w-full max-w-3xl mt-12 flex flex-col gap-8">
           
-          <div className="text-center">
-            <h3 className="font-sans text-base md:text-lg tracking-[0.15em] text-[#f7e4a9] font-bold group-hover:text-gold-400 transition-colors uppercase">
-              DHINOJA OmniTech Resolutions
-            </h3>
-            <p className="font-sans text-[10px] tracking-[0.2em] text-stone-400 mt-1">
-              {t("global.footer.nickname")} <span className="text-[#d4af37]/80 font-bold group-hover:text-gold-400 transition-colors">DOTR</span>
-            </p>
-          </div>
-        </a>
+          {/* ============================================================ */}
+          {/* FEATURED #1: THE ROYAL WEDDING (HEADLINE CELEBRATION)        */}
+          {/* ============================================================ */}
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            whileHover={{ y: -4 }}
+            className="group relative rounded-[32px] p-6 sm:p-10 bg-gradient-to-br from-[#2f0e3d]/90 via-[#21072b]/95 to-[#15021c]/90 border-2 border-amber-400/60 shadow-[0_12px_45px_rgba(212,175,55,0.25)] hover:shadow-[0_16px_60px_rgba(212,175,55,0.45)] transition-all duration-500 backdrop-blur-md overflow-hidden"
+          >
+            {/* Glowing Accent Corner & Ambient Light */}
+            <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-amber-400/20 via-purple-600/10 to-transparent rounded-bl-full pointer-events-none" />
+            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-amber-500/10 rounded-full filter blur-2xl pointer-events-none" />
 
-        {/* Interactive Button Pills */}
-        <div className="flex flex-col gap-3 w-full">
-          {/* Top row: Website & Phone */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">
-            <a 
-              href="http://dotr.in" 
-              target="_blank" 
+            <div className="relative z-10 flex flex-col">
+              {/* Badge */}
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-serif tracking-widest uppercase bg-amber-500/20 text-amber-300 border border-amber-400/40 shadow-sm font-bold">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+                  Primary Celebration
+                </span>
+                <span className="font-serif text-xs tracking-wider text-amber-300/80 hidden sm:inline-block">
+                  Upcoming
+                </span>
+              </div>
+
+              {/* Title & Description */}
+              <h2 className="font-serif text-3xl sm:text-5xl font-bold text-amber-100 group-hover:text-amber-200 transition-colors drop-shadow-sm">
+                The Royal Wedding
+              </h2>
+
+              <p className="font-alex-brush text-xl sm:text-3xl text-amber-300/90 mt-1">
+                A grand celebration of sacred vows & forever love
+              </p>
+
+              <p className="font-sans text-xs sm:text-sm text-stone-300/90 mt-3 leading-relaxed">
+                Step inside the grand wedding portal for multi-day itineraries (Mandap Muhurat, Haldi, Mehendi, Sangeet, Baarat, Pheras & Reception), live countdown, and celebration details.
+              </p>
+
+              {/* Live Countdown Mini Grid */}
+              <div className="my-6 grid grid-cols-4 gap-2 sm:gap-3 max-w-md">
+                {[
+                  { label: "DAYS", val: timeLeft.days },
+                  { label: "HOURS", val: timeLeft.hours },
+                  { label: "MINS", val: timeLeft.minutes },
+                  { label: "SECS", val: timeLeft.seconds },
+                ].map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex flex-col items-center justify-center p-2.5 sm:p-3 rounded-2xl bg-black/50 border border-amber-400/25 backdrop-blur-sm shadow-inner"
+                  >
+                    <span className="font-sans text-xl sm:text-3xl font-extrabold text-amber-200">
+                      {String(item.val).padStart(2, "0")}
+                    </span>
+                    <span className="font-sans text-[9px] sm:text-[10px] tracking-widest text-stone-400 mt-0.5 uppercase">
+                      {item.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* CTA Button */}
+              <div className="pt-2">
+                <Link
+                  href="/wedding"
+                  className="inline-flex items-center justify-center gap-3 w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-amber-500 via-[#f7e4a9] to-amber-500 text-stone-950 font-serif text-sm sm:text-base font-bold tracking-wider shadow-[0_0_25px_rgba(212,175,55,0.4)] hover:shadow-[0_0_35px_rgba(212,175,55,0.65)] hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 cursor-pointer"
+                >
+                  <span>Enter Grand Wedding Portal</span>
+                  <ArrowRight className="w-5 h-5 text-stone-950 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* ============================================================ */}
+          {/* ORNATE TIMELINE CONNECTOR                                    */}
+          {/* ============================================================ */}
+          <div className="flex flex-col items-center my-[-8px]">
+            <div className="w-[1px] h-8 bg-gradient-to-b from-amber-400/60 to-amber-400/20" />
+            <div className="w-8 h-8 rounded-full border border-amber-400/40 bg-stone-950/80 flex items-center justify-center text-amber-300 text-xs shadow-md">
+              💍
+            </div>
+            <div className="w-[1px] h-8 bg-gradient-to-b from-amber-400/20 to-amber-400/60" />
+          </div>
+
+          {/* ============================================================ */}
+          {/* FEATURED #2: THE ENGAGEMENT (WHERE FOREVER BEGAN)            */}
+          {/* ============================================================ */}
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            whileHover={{ y: -4 }}
+            className="group relative rounded-[32px] p-6 sm:p-10 bg-gradient-to-br from-[#1a0823]/80 via-[#13031a]/85 to-[#0b010f]/90 border border-amber-400/30 shadow-[0_10px_35px_rgba(0,0,0,0.5)] hover:shadow-[0_12px_45px_rgba(212,175,55,0.2)] transition-all duration-500 backdrop-blur-md overflow-hidden"
+          >
+            <div className="relative z-10 flex flex-col">
+              {/* Badge */}
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-serif tracking-widest uppercase bg-rose-500/10 text-rose-300 border border-rose-400/30 shadow-sm font-semibold">
+                  <Heart className="w-3.5 h-3.5 text-rose-300" />
+                  Where Forever Began
+                </span>
+                <span className="font-serif text-xs tracking-wider text-stone-400 hidden sm:inline-block">
+                  Relive The Memories
+                </span>
+              </div>
+
+              {/* Title & Description */}
+              <h2 className="font-serif text-2xl sm:text-4xl font-bold text-amber-100 group-hover:text-amber-200 transition-colors">
+                The Engagement Ceremony
+              </h2>
+
+              <p className="font-alex-brush text-xl sm:text-2xl text-amber-300/80 mt-1">
+                The grand ring ceremony, palace gates & sacred promises
+              </p>
+
+              <p className="font-sans text-xs sm:text-sm text-stone-300/80 mt-3 leading-relaxed">
+                Relive the royal palace gate entrance, divine blessings, guestbook wishes, digital invitation patrika, and love story memories.
+              </p>
+
+              {/* Feature Highlights Pills */}
+              <div className="my-5 flex flex-wrap gap-2">
+                {[
+                  "Palace Gate Entrance",
+                  "Digital Blessings Guestbook",
+                  "Nimantrak Patrika",
+                  "Multilingual Support",
+                ].map((feat, idx) => (
+                  <span
+                    key={idx}
+                    className="px-3 py-1 rounded-full bg-white/[0.04] border border-amber-400/20 text-[11px] font-sans tracking-wide text-amber-200/80"
+                  >
+                    ✦ {feat}
+                  </span>
+                ))}
+              </div>
+
+              {/* CTA Button */}
+              <div className="pt-2">
+                <Link
+                  href="/engagement"
+                  className="inline-flex items-center justify-center gap-3 w-full sm:w-auto px-7 py-3.5 rounded-full bg-stone-900/90 hover:bg-stone-850 text-amber-200 border border-amber-400/40 font-serif text-sm sm:text-base font-semibold tracking-wider hover:border-amber-300 hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 cursor-pointer"
+                >
+                  <span>Relive Engagement Memories</span>
+                  <ArrowRight className="w-4 h-4 text-amber-300 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </div>
+            </div>
+          </motion.div>
+
+        </div>
+
+        {/* ============================================================ */}
+        {/* DEVELOPER CREDITS & FOOTER                                   */}
+        {/* ============================================================ */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="w-full max-w-lg mt-16 bg-white/[0.02] backdrop-blur-md rounded-[28px] border border-amber-400/15 p-6 flex flex-col items-center text-center shadow-[0_10px_35px_rgba(0,0,0,0.5)]"
+        >
+          <span className="font-serif text-xs sm:text-sm tracking-[0.25em] text-amber-300 uppercase font-bold mb-4 drop-shadow-[0_0_8px_rgba(212,175,55,0.5)]">
+            Crafted With Love By
+          </span>
+
+          <a
+            href="http://dotr.in"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex flex-col items-center gap-2.5 cursor-pointer mb-5"
+          >
+            <div className="w-40 h-20 rounded-2xl bg-white p-2.5 border-2 border-amber-400/60 flex items-center justify-center group-hover:scale-105 group-hover:border-amber-400 transition-all duration-300 shadow-[0_0_15px_rgba(212,175,55,0.25)]">
+              <img
+                src="/logos/DOTR_Full_Color_Logo.png"
+                alt="DOTR Logo"
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <h3 className="font-sans text-sm tracking-[0.15em] text-amber-100 font-bold group-hover:text-amber-300 uppercase mt-1">
+              DHINOJA OmniTech Resolutions (DOTR)
+            </h3>
+          </a>
+
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full text-xs font-sans">
+            <a
+              href="http://dotr.in"
+              target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-full border border-gold-400/20 bg-black/40 hover:bg-gold-500 hover:text-stone-950 font-sans text-xs tracking-wider text-[#f7e4a9] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_0_20px_rgba(212,175,55,0.35)] font-semibold cursor-pointer whitespace-nowrap"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-amber-400/20 bg-black/40 hover:bg-amber-400 hover:text-stone-950 text-amber-200 transition-all duration-300"
             >
               <Globe className="w-3.5 h-3.5" />
               dotr.in
             </a>
-            
-            <a 
+            <a
               href="tel:+918200965524"
-              className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-full border border-gold-400/20 bg-black/40 hover:bg-gold-500 hover:text-stone-950 font-sans text-xs tracking-wider text-[#f7e4a9] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_0_20px_rgba(212,175,55,0.35)] font-semibold cursor-pointer whitespace-nowrap"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-amber-400/20 bg-black/40 hover:bg-amber-400 hover:text-stone-950 text-amber-200 transition-all duration-300"
             >
               <Phone className="w-3.5 h-3.5" />
-              {formatNumber("+91 8200965524")}
+              +91 8200965524
             </a>
           </div>
-
-          {/* Bottom row: Email (Full width to avoid overflow) */}
-          <a 
-            href="mailto:hello@dotr.in"
-            className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-full border border-gold-400/20 bg-black/40 hover:bg-gold-500 hover:text-stone-950 font-sans text-xs sm:text-[11px] md:text-xs tracking-wider text-[#f7e4a9] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_0_20px_rgba(212,175,55,0.35)] font-semibold cursor-pointer whitespace-nowrap overflow-hidden text-ellipsis"
-          >
-            <Mail className="w-3.5 h-3.5 flex-shrink-0" />
-            <span className="truncate">hello@dotr.in</span>
-          </a>
-        </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </div>
   );
 }
