@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
@@ -39,6 +39,24 @@ interface EngagementTime {
   isPast: boolean;
   isOngoing: boolean;
 }
+
+// Helper to parse time string like "09:00 AM" into Date for the ceremony date (18th August 2026)
+const parseCeremonyTime = (timeStr: string | undefined, defaultIso: string): Date => {
+  if (!timeStr) return new Date(defaultIso);
+  try {
+    const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+    if (!match) return new Date(defaultIso);
+    let hours = parseInt(match[1], 10);
+    const minutes = parseInt(match[2], 10);
+    const meridiem = match[3] ? match[3].toUpperCase() : null;
+    if (meridiem === "PM" && hours < 12) hours += 12;
+    if (meridiem === "AM" && hours === 12) hours = 0;
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return new Date(`2026-08-18T${pad(hours)}:${pad(minutes)}:00+05:30`);
+  } catch {
+    return new Date(defaultIso);
+  }
+};
 
 export default function SruManHub() {
   const [mounted, setMounted] = useState(false);
@@ -103,9 +121,36 @@ export default function SruManHub() {
     }
   };
 
-  // Engagement Ceremony Dates (18th August 2026, 9:00 AM IST)
-  const targetEngagementDate = new Date("2026-08-18T09:00:00+05:30");
-  const completionEngagementDate = new Date("2026-08-18T14:00:00+05:30");
+  // Engagement Ceremony Muhurat Timings (Configured via Environment Variables)
+  const muhuratStartTime = process.env.NEXT_PUBLIC_MUHURAT_START_TIME || "09:00 AM";
+  const muhuratEndTime = process.env.NEXT_PUBLIC_MUHURAT_END_TIME || "02:00 PM";
+  const muhuratTz = process.env.NEXT_PUBLIC_MUHURAT_TIMEZONE || "IST";
+  const muhuratSeparator = process.env.NEXT_PUBLIC_MUHURAT_SEPARATOR || "to";
+
+  // Formatted Muhurat label rendered in the Ceremony Fast Facts Bar
+  const muhuratDisplay = useMemo(() => {
+    const start = (muhuratStartTime || "").trim();
+    const end = (muhuratEndTime || "").trim();
+
+    const cleanStart = start.replace(new RegExp(`\\s*${muhuratTz}\\s*$`, "i"), "").trim();
+    const cleanEnd = end ? end.replace(new RegExp(`\\s*${muhuratTz}\\s*$`, "i"), "").trim() : "";
+
+    if (cleanStart && cleanEnd) {
+      return `${cleanStart} ${muhuratSeparator} ${cleanEnd} ${muhuratTz}`;
+    }
+    if (cleanStart) {
+      return `${cleanStart} ${muhuratTz}`;
+    }
+    return start || "09:00 AM IST";
+  }, [muhuratStartTime, muhuratEndTime, muhuratTz, muhuratSeparator]);
+
+  const targetEngagementDate = useMemo(() => {
+    return parseCeremonyTime(muhuratStartTime, "2026-08-18T09:00:00+05:30");
+  }, [muhuratStartTime]);
+
+  const completionEngagementDate = useMemo(() => {
+    return parseCeremonyTime(muhuratEndTime, "2026-08-18T14:00:00+05:30");
+  }, [muhuratEndTime]);
 
   const [engagementTime, setEngagementTime] = useState<EngagementTime>({
     months: 0,
@@ -155,7 +200,7 @@ export default function SruManHub() {
     calculateEngagementTime();
     const interval = setInterval(calculateEngagementTime, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [targetEngagementDate, completionEngagementDate]);
 
   // Trigger celebration confetti
   const triggerConfetti = () => {
@@ -490,35 +535,35 @@ export default function SruManHub() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-center mt-6 w-full max-w-2xl px-2"
+          className="text-center mt-5 sm:mt-6 w-full max-w-3xl px-3"
         >
           {/* Welcome with Ornate Royal Filigree Divider */}
-          <div className="flex items-center justify-center gap-2 sm:gap-4 mb-2">
-            <div className="h-[1px] w-8 sm:w-20 bg-gradient-to-r from-transparent via-amber-400/60 to-amber-300" />
-            <span className="text-amber-400/80 text-[10px] sm:text-xs">✦ ❖ ✦</span>
-            <span className="font-serif text-[11px] sm:text-xs md:text-sm tracking-[0.32em] sm:tracking-[0.4em] text-amber-200/90 uppercase font-semibold">
+          <div className="flex items-center justify-center gap-1.5 xs:gap-2 sm:gap-3 mb-2 max-w-full">
+            <div className="h-[1px] w-4 xs:w-8 sm:w-16 bg-gradient-to-r from-transparent via-amber-400/60 to-amber-300 flex-shrink" />
+            <span className="text-amber-400/80 text-[9px] xs:text-[10px] sm:text-xs flex-shrink-0">✦</span>
+            <span className="font-serif text-[10px] xs:text-[11px] sm:text-xs md:text-sm tracking-[0.16em] xs:tracking-[0.22em] sm:tracking-[0.3em] text-amber-200/90 uppercase font-semibold whitespace-nowrap">
               Welcome To The Celebrations of
             </span>
-            <span className="text-amber-400/80 text-[10px] sm:text-xs">✦ ❖ ✦</span>
-            <div className="h-[1px] w-8 sm:w-20 bg-gradient-to-l from-transparent via-amber-400/60 to-amber-300" />
+            <span className="text-amber-400/80 text-[9px] xs:text-[10px] sm:text-xs flex-shrink-0">✦</span>
+            <div className="h-[1px] w-4 xs:w-8 sm:w-16 bg-gradient-to-l from-transparent via-amber-400/60 to-amber-300 flex-shrink" />
           </div>
 
           {/* Grand Shimmering Nameplate */}
-          <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-wide mt-2 text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-[#fff3b8] to-amber-300 drop-shadow-[0_2px_20px_rgba(212,175,55,0.45)] transition-all duration-500 hover:scale-[1.01]">
+          <h1 className="font-serif text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-wide mt-1.5 sm:mt-2 text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-[#fae4a8] to-amber-200 drop-shadow-[0_2px_18px_rgba(212,175,55,0.45)] whitespace-nowrap transition-all duration-500 hover:scale-[1.01]">
             <span className="inline-block hover:text-amber-100 transition-colors">Srushti</span>{" "}
-            <span className="font-alex-brush text-5xl sm:text-7xl md:text-8xl text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-rose-300 to-amber-400 font-normal px-1 drop-shadow-[0_0_15px_rgba(244,114,182,0.4)]">
+            <span className="font-alex-brush text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-rose-300 to-amber-400 font-normal px-1 xs:px-1.5 drop-shadow-[0_0_15px_rgba(244,114,182,0.4)] align-middle">
               &
             </span>{" "}
             <span className="inline-block hover:text-amber-100 transition-colors">Aman</span>
           </h1>
 
           {/* Romantic Quote with Twin Pulsing Hearts */}
-          <div className="inline-flex items-center justify-center gap-2 sm:gap-3 mt-3 sm:mt-4 px-4 sm:px-6 py-1.5 rounded-full bg-gradient-to-r from-amber-500/10 via-purple-500/15 to-amber-500/10 border border-amber-400/25 backdrop-blur-sm group hover:border-amber-400/40 transition-colors">
-            <Heart className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-300/80 fill-amber-300/40 group-hover:scale-125 transition-transform duration-300 animate-pulse" />
-            <p className="font-alex-brush text-2xl sm:text-4xl text-amber-200/95 font-normal drop-shadow-[0_0_12px_rgba(212,175,55,0.35)]">
+          <div className="inline-flex items-center justify-center gap-2 sm:gap-2.5 mt-2.5 sm:mt-3.5 px-3.5 xs:px-4 sm:px-6 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-amber-500/10 via-purple-900/25 to-amber-500/10 border border-amber-400/30 backdrop-blur-md shadow-[0_4px_16px_rgba(0,0,0,0.3)] group hover:border-amber-400/50 transition-all duration-300">
+            <Heart className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300/80 fill-amber-300/40 group-hover:scale-125 transition-transform duration-300 animate-pulse flex-shrink-0" />
+            <p className="font-alex-brush text-sm xs:text-base sm:text-xl md:text-2xl text-amber-200/95 font-normal tracking-wide drop-shadow-[0_0_10px_rgba(212,175,55,0.35)] leading-tight">
               &ldquo;Two hearts, two souls, one eternal journey of love&rdquo;
             </p>
-            <Heart className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-300/80 fill-amber-300/40 group-hover:scale-125 transition-transform duration-300 animate-pulse" />
+            <Heart className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300/80 fill-amber-300/40 group-hover:scale-125 transition-transform duration-300 animate-pulse flex-shrink-0" />
           </div>
 
           {/* Subtitle Description */}
@@ -679,7 +724,7 @@ export default function SruManHub() {
                 <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-black/40 border border-amber-400/20 text-stone-300">
                   <Clock className="w-4 h-4 text-amber-300 flex-shrink-0" />
                   <span>
-                    <strong className="text-amber-200">Muhurat:</strong> 09:00 AM IST
+                    <strong className="text-amber-200">Muhurat:</strong> {muhuratDisplay}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-black/40 border border-amber-400/20 text-stone-300">

@@ -269,7 +269,8 @@
 - Further removed the initial fade-in animations for the central monogram logo and the "Open Gate" button on the Palace Gate Entrance screen (`PalaceGateEntry.tsx`), ensuring all central elements appear fully rendered instantly on load without any staggered transition effects.
 
 ## Prompt 58 (2026-06-29)
-- Replaced standard <img> tags and CSS background images with Next.js <Image> components in PalaceGateEntry.tsx for dark_purple_without_door.png and oyal_door_v2.png. This leverages Next.js automatic image optimization (WebP/AVIF format, resizing, compression) to significantly reduce page load times and fix the 'loading too much' issue on mobile browsers and browsers other than Edge.
+- Replaced standard <img> tags and CSS background images with Next.js <Image> components in PalaceGateEntry.tsx for dark_purple_without_door.png and 
+oyal_door_v2.png. This leverages Next.js automatic image optimization (WebP/AVIF format, resizing, compression) to significantly reduce page load times and fix the 'loading too much' issue on mobile browsers and browsers other than Edge.
 - Added the priority prop to these images to ensure they preload immediately when the application starts, removing delays in loading the initial gate animation.
 
 ## Prompt 59 (2026-06-29)
@@ -277,7 +278,8 @@
 
 ## Prompt 60 (2026-06-29)
 - Reverted the door and background assets in PalaceGateEntry.tsx back to standard <img> and ackground-image CSS. Next.js <Image> component recalculates srcset resolutions during heavy scale animations causing severe render lag when opening the doors.
-- Implemented a global Asset Preloader in PalaceGateEntry.tsx that downloads the large PNGs (dark_purple_without_door.png, oyal_door_v2.png) into browser cache via window.Image before rendering the invitation. This solves the issue of heavy images not loading in advance on slower connections, replacing it with a sleek 'Loading Palace...' spinner sequence.
+- Implemented a global Asset Preloader in PalaceGateEntry.tsx that downloads the large PNGs (dark_purple_without_door.png, 
+oyal_door_v2.png) into browser cache via window.Image before rendering the invitation. This solves the issue of heavy images not loading in advance on slower connections, replacing it with a sleek 'Loading Palace...' spinner sequence.
 
 ## Prompt 61 (2026-06-29)
 - Reverted g-black back to g-transparent in the outer wrapper of PalaceGateEntry.tsx to fix the black screen during the gate opening animation. This allows the main website components rendered underneath to be visible as the gate zooms in and fades to 0 opacity.
@@ -353,3 +355,26 @@
 - Fixed excessive white padding and sizing for the DOTR logo in the footer developer section ([page.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/page.tsx)):
   - Generated a clean trimmed version of the logo (`/logos/DOTR_Full_Color_Logo_Trimmed.png`) removing over 450px of empty baked-in vertical padding from the original image.
   - Adjusted the brand card frame dimensions to `w-60 sm:w-72 md:w-80 h-20 sm:h-22 md:h-24` with `px-4 py-2` padding, matching the natural 3.48:1 wide aspect ratio of the brand mark so the logo is displayed prominently, boldly, and without unnecessary white borders.
+
+## Prompt 74 (2026-11-24)
+- Configured Muhurat starting and ending times via environment variables and rendered them dynamically ([page.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/page.tsx), [.env](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/.env)):
+  - Added `NEXT_PUBLIC_MUHURAT_START_TIME="09:00 AM"`, `NEXT_PUBLIC_MUHURAT_END_TIME="02:00 PM"`, and `NEXT_PUBLIC_MUHURAT_TIMEZONE="IST"` to `.env`.
+  - Created a robust date-time parser `parseCeremonyTime` to calculate target and completion date objects dynamically from env timings with safe fallbacks.
+  - Dynamically rendered formatted Muhurat timing (`09:00 AM to 02:00 PM IST`) inside the Ceremony Fast Facts bar, supporting flexible start time, end time, and timezone overrides from `.env`.
+
+## Prompt 75 (2026-11-24)
+- Redesigned and properly scaled the hero welcome header on the SruMan Hub Landing Page ([page.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/page.tsx)):
+  - **Fixed Couple Nameplate Wrapping & Oversizing**: Reduced `h1` from an oversized `text-4xl sm:text-6xl md:text-7xl lg:text-8xl` to a royal, refined `text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl` with `whitespace-nowrap` so "Srushti & Aman" fits gracefully on a single line across all mobile, tablet, and desktop screens without breaking across lines.
+  - **Fixed "OF" Line Break in Welcome Banner**: Added `whitespace-nowrap`, responsive line dividers (`w-4 xs:w-8 sm:w-16`), and balanced tracking so "Welcome To The Celebrations of" remains unified on one line without orphaning words.
+  - **Refined Romantic Quote Ribbon**: Scaled quote font size from `text-2xl sm:text-4xl` to `text-sm xs:text-base sm:text-xl md:text-2xl` with a glassmorphic gold & purple badge, preventing awkward two-line capsule stretching and keeping the quote beautifully proportioned.
+
+## Prompt 76 (2026-11-24)
+- Updated all favicons, app icons, and social sharing link preview assets to use a clean solid white background with the AS Monogram Emblem:
+  - **White-Background Favicon & App Icons**:
+    - Regenerated `favicon.ico`, `icon.png` (512x512), `apple-icon.png` (180x180), `icon-192.png`, `icon-512.png`, `apple-touch-icon.png`, `favicon-32x32.png`, and `favicon-16x16.png` with a solid white (`#ffffff`) background, ensuring crisp contrast and legibility across all dark and light browser tabs, bookmark bars, and mobile home screens.
+    - Updated `site.webmanifest` and `layout.tsx` themeColor to `#ffffff`.
+  - **White-Background Open Graph & Twitter Social Cards**:
+    - Regenerated `opengraph-image.png`, `twitter-image.png`, `og-image.png`, and `og-image.jpg` (1200x630) with an elegant luxury white background, refined double gold borders with diamond star corner accents, the couple's AS Monogram Crest, and high-contrast royal typography in rich plum/deep purple (`#300d3b` and `#5c2668`) matching the butterfly and letters.
+
+
+
