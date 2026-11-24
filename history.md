@@ -376,5 +376,50 @@ oyal_door_v2.png) into browser cache via window.Image before rendering the invit
   - **White-Background Open Graph & Twitter Social Cards**:
     - Regenerated `opengraph-image.png`, `twitter-image.png`, `og-image.png`, and `og-image.jpg` (1200x630) with an elegant luxury white background, refined double gold borders with diamond star corner accents, the couple's AS Monogram Crest, and high-contrast royal typography in rich plum/deep purple (`#300d3b` and `#5c2668`) matching the butterfly and letters.
 
+## Prompt 77 (2026-11-24)
+- Replaced the numerical blessings counter badge on the "Shower Royal Blessings (પુષ્પવૃષ્ટિ)" button ([page.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/page.tsx)) with a pulsing rose heart icon matching the left side, achieving balanced and symmetrical visual styling.
+
+## Prompt 78 (2026-11-24)
+- Customized page and portal titles to be dynamic, distinct, and culturally rich across all routes, portals, and languages:
+  - **Root Celebration Hub Portal ([layout.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/layout.tsx), [page.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/page.tsx))**:
+    - Updated default metadata title to `SruMan | Celebration Portal • Srushti & Aman`.
+    - Added multilingual dynamic `document.title` on the Hub landing page (`SruMan | Celebration Portal • Srushti & Aman`, `SruMan | સેલિબ્રેશન પોર્ટલ • Srushti & Aman`, `SruMan | सेलिब्रेशन पोर्टल • Srushti & Aman`).
+  - **Engagement Ceremony Portal ([layout.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/engagement/layout.tsx), [page.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/engagement/page.tsx))**:
+    - Created dedicated server metadata layout with title `SruMan | Engagement Ceremony • Srushti & Aman` and custom Open Graph / Twitter descriptions.
+    - Added dynamic section-aware and language-aware `document.title` updating on the engagement page (`SruMan | Engagement Ceremony • Srushti & Aman`, `SruMan | Srushti અને Aman ની રિંગ સેરેમની`, and section-specific titles like `SruMan | Nimantrak • Engagement Portal` / `SruMan | નિમંત્રક • રિંગ સેરેમની`).
+  - **The Royal Wedding Portal ([layout.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/wedding/layout.tsx), [page.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/wedding/page.tsx))**:
+    - Created dedicated server metadata layout with title `SruMan | The Royal Wedding • Srushti & Aman`.
+    - Added dynamic multilingual `document.title` updates (`SruMan | The Royal Wedding • Srushti & Aman`, `SruMan | ધ રોયલ વેડિંગ • Srushti & Aman`, `SruMan | द रॉयल वेडिंग • Srushti & Aman`).
+
+## Prompt 79 (2026-11-24)
+- Implemented the unified royal preloader globally across the entire application:
+  - **Unified Royal Preloader Component ([Preloader.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/components/Preloader.tsx))**:
+    - Modernized into a reusable luxury preloader featuring the deep royal background (`#12021c`), ambient purple and gold radial lights, corner filigree accents, rotating celestial gold ring with 8 nodes, counter-orbit dashed ring, glowing white medallion with `sruman-logo.png`, shimmering light beam divider, and smooth Framer Motion `AnimatePresence` fade-out transition.
+    - Supports customizable `text`, `subtitle`, `fullScreen`, `minDuration`, and `onComplete` props.
+  - **Global Next.js Route Suspense Loader ([loading.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/loading.tsx))**:
+    - Created root `loading.tsx` so Next.js React Suspense and client route transitions display the royal loader globally during page navigation.
+  - **SruMan Master Hub Landing Page ([page.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/page.tsx))**:
+    - Integrated `<Preloader text="Loading SruMan Hub..." subtitle="Welcome To The Celebrations" />` with an initial mount loading state and graceful fade out.
+  - **The Royal Wedding Portal ([page.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/wedding/page.tsx))**:
+    - Integrated `<Preloader text="Loading The Royal Wedding..." subtitle="Sacred Vows & Forever Love" />` with an initial mount loading state and graceful fade out.
+  - **Palace Gate Entry screen ([PalaceGateEntry.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/components/PalaceGateEntry.tsx))**:
+    - Replaced the inline preloader markup with `<Preloader text="Loading Palace Gates..." subtitle="Auspicious Royal Celebration" fullScreen={false} zIndex={60} />`, unifying all portals under the exact same royal aesthetic.
+
+## Prompt 80 (2026-11-24)
+- Redesigned the HubBridge portal navigation bar and eliminated header element collision across all viewports:
+  - **Unified Royal Floating Capsule ([HubBridge.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/components/HubBridge.tsx))**:
+    - Transformed the two disconnected buttons into a cohesive, luxury glassmorphic dock with deep obsidian-plum background (`#14021c`), ambient gold shimmer beam, and delicate golden filigree divider.
+    - Added an ornate rotating gold star medallion (`✦`) for `SruMan Hub` and glowing jewel icons with animated gliding arrows for `The Royal Wedding` and `Engagement`.
+    - Implemented responsive typography (`<span className="hidden sm:inline">The </span>Royal Wedding`) so the dock stays perfectly compact and legible on mobile screens without overflow.
+  - **Zero-Overlap Layout Spacing ([Welcome.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/components/Welcome.tsx), [wedding/page.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/app/wedding/page.tsx))**:
+    - Increased `Welcome.tsx` top padding from `py-8` to `pt-20 sm:pt-24 md:pt-28 pb-10 sm:pb-16`, guaranteeing that the sacred mantras (`|| શ્રીનાથજી બાવા સદા બિરાજમાન છે. ||`) and deities (Shreenathji, Ganesh, Mataji) start comfortably below the navigation bar with generous breathing room.
+    - Increased `WeddingPage` hero top padding from `pt-24` to `pt-28 sm:pt-32` to guarantee zero collision with the top spiritual invocation.
+  - **Symmetrical Navigation Alignment ([LanguageSwitcher.tsx](file:///d:/DHINOJA/DotR/Websites/SruMan-engagement/src/components/LanguageSwitcher.tsx))**:
+    - Aligned `LanguageSwitcher` on desktop to `md:top-5 md:right-6 sm:right-8` matching `HubBridge` at `top-5`, creating balanced, luxury framing across the top of the screen.
+
+
+
+
+
 
 

@@ -9,7 +9,7 @@ import { useLanguage } from "@/context/LanguageContext";
 export default function Welcome() {
   const { t } = useLanguage();
   return (
-    <section id="welcome-section" className="w-full flex flex-col gap-10 py-8 px-4 bg-[#fdf9ff] relative overflow-x-hidden select-none">
+    <section id="welcome-section" className="w-full flex flex-col gap-10 pt-20 sm:pt-24 md:pt-28 pb-10 sm:pb-16 px-4 bg-[#fdf9ff] relative overflow-x-hidden select-none">
       {/* Traditional Side Garlands (Toran / Hanging Flowers) */}
       <div className="absolute top-0 left-0 bottom-0 w-12 sm:w-20 pointer-events-none z-10 flex flex-col justify-between items-center opacity-60">
         <svg viewBox="0 0 40 400" className="w-full h-full fill-none stroke-[#d4af37]" strokeWidth="1">
@@ -39,7 +39,7 @@ export default function Welcome() {
       </div>
 
       {/* Mobile view deities header (visible on mobile only) */}
-      <div className="md:hidden w-full flex justify-between items-start z-20 px-6 pt-6 relative">
+      <div className="md:hidden w-full flex justify-between items-start z-20 px-4 xs:px-6 pt-2 relative">
         {/* Top Left: Lord Shreenathji */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -108,7 +108,7 @@ export default function Welcome() {
       </div>
 
       {/* Top Mantras Grid (Desktop only) */}
-      <div className="hidden md:grid w-full max-w-5xl mx-auto grid-cols-3 gap-20 items-start text-center z-20 mt-1 px-2">
+      <div className="hidden md:grid w-full max-w-5xl mx-auto grid-cols-3 gap-12 lg:gap-20 items-start text-center z-20 mt-2 px-4">
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}

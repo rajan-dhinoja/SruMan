@@ -14,7 +14,7 @@ export default function LanguageSwitcher() {
   ] as const;
 
   return (
-    <div className="fixed bottom-6 md:bottom-auto md:top-8 left-1/2 md:left-auto md:right-24 -translate-x-1/2 md:translate-x-0 z-50 flex items-center bg-[#fbf9fb]/90 backdrop-blur-xl border border-[#d4af37]/45 p-[3px] rounded-full shadow-[0_12px_40px_rgba(94,31,112,0.22),_0_0_20px_rgba(212,175,55,0.18)] select-none max-w-[calc(100vw-32px)] md:max-w-none overflow-x-auto no-scrollbar transition-all duration-300">
+    <div className="fixed bottom-6 md:bottom-auto md:top-5 left-1/2 md:left-auto md:right-6 sm:md:right-8 -translate-x-1/2 md:translate-x-0 z-50 flex items-center bg-[#fbf9fb]/90 backdrop-blur-xl border border-[#d4af37]/45 p-[3px] rounded-full shadow-[0_12px_40px_rgba(94,31,112,0.22),_0_0_20px_rgba(212,175,55,0.18)] select-none max-w-[calc(100vw-32px)] md:max-w-none overflow-x-auto no-scrollbar transition-all duration-300">
       {languages.map((lang) => {
         const isActive = language === lang.code;
         return (

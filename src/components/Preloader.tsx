@@ -3,127 +3,138 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-interface PreloaderProps {
-  onComplete: () => void;
+export interface PreloaderProps {
+  /** Text shown below the monogram, defaults to "Loading Celebrations..." */
+  text?: string;
+  /** Optional secondary subtitle or mantra */
+  subtitle?: string;
+  /** Whether the preloader covers the viewport (fixed) or fills container (absolute) */
+  fullScreen?: boolean;
+  /** Callback fired when minimum display duration finishes */
+  onComplete?: () => void;
+  /** Minimum display duration in milliseconds (default 800ms) */
+  minDuration?: number;
+  /** Custom z-index (defaults to 60) */
+  zIndex?: number;
 }
 
-export default function Preloader({ onComplete }: PreloaderProps) {
-  const [progress, setProgress] = useState(0);
-  const [isLoaded, setIsLoaded] = useState(false);
+export default function Preloader({
+  text = "Loading Celebrations...",
+  subtitle,
+  fullScreen = true,
+  onComplete,
+  minDuration = 800,
+  zIndex = 60,
+}: PreloaderProps) {
+  const [canComplete, setCanComplete] = useState(false);
 
   useEffect(() => {
-    const duration = 2400; // 2.4s loader
-    const intervalTime = 24;
-    const step = 100 / (duration / intervalTime);
+    const timer = setTimeout(() => {
+      setCanComplete(true);
+      if (onComplete) {
+        onComplete();
+      }
+    }, minDuration);
 
-    const timer = setInterval(() => {
-      setProgress((prev) => {
-        const next = prev + step;
-        if (next >= 100) {
-          clearInterval(timer);
-          setIsLoaded(true);
-          setTimeout(() => {
-            onComplete();
-          }, 800); // Small pause at 100%
-          return 100;
-        }
-        return next;
-      });
-    }, intervalTime);
-
-    return () => clearInterval(timer);
-  }, [onComplete]);
+    return () => clearTimeout(timer);
+  }, [minDuration, onComplete]);
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 1 }}
-        exit={{ opacity: 0, y: "-100%" }}
-        transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1] }}
-        className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#1c1917] select-none"
-      >
-        {/* Soft Background Radial Light */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(142,53,167,0.08)_0%,transparent_70%)] pointer-events-none" />
+    <motion.div
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      style={{ zIndex }}
+      className={`${
+        fullScreen ? "fixed inset-0" : "absolute inset-0"
+      } flex flex-col items-center justify-center bg-[#12021c] select-none overflow-hidden`}
+    >
+      {/* Soft Ambient Radial Lights (Gold & Royal Purple) */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.12)_0%,rgba(94,31,112,0.18)_40%,transparent_75%)] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] bg-amber-500/10 rounded-full filter blur-[100px] pointer-events-none" />
 
-        <div className="relative flex flex-col items-center max-w-md w-full px-6">
-          {/* Animated Gold Monogram Container */}
+      {/* Decorative Ornate Corner Highlights */}
+      <div className="absolute top-4 left-4 w-7 h-7 border-t border-l border-amber-400/30 rounded-tl-lg pointer-events-none" />
+      <div className="absolute top-4 right-4 w-7 h-7 border-t border-r border-amber-400/30 rounded-tr-lg pointer-events-none" />
+      <div className="absolute bottom-4 left-4 w-7 h-7 border-b border-l border-amber-400/30 rounded-bl-lg pointer-events-none" />
+      <div className="absolute bottom-4 right-4 w-7 h-7 border-b border-r border-amber-400/30 rounded-br-lg pointer-events-none" />
+
+      <div className="relative flex flex-col items-center max-w-sm w-full px-6 text-center z-10">
+        {/* Central Royal Medallion with Celestial Rotating Rings */}
+        <motion.div
+          animate={{ opacity: [0.8, 1, 0.8], scale: [0.97, 1.03, 0.97] }}
+          transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+          className="relative w-28 h-28 sm:w-32 sm:h-32 mb-6 flex items-center justify-center"
+        >
+          {/* Ambient Monogram Backlight */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-amber-400/25 via-purple-600/30 to-amber-300/20 rounded-full filter blur-xl opacity-75 animate-pulse pointer-events-none" />
+
+          {/* Outer Rotating Celestial Ring with 8 Gold Nodes */}
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            className="relative flex items-center justify-center w-40 h-40 mb-10"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+            className="absolute inset-0"
           >
-            {/* Spinning Thin Outer Gold Circle */}
-            <svg className="absolute w-full h-full transform -rotate-90">
-              <circle
-                cx="80"
-                cy="80"
-                r="74"
-                stroke="rgba(142, 53, 167, 0.15)"
-                strokeWidth="1.5"
-                fill="transparent"
-              />
-              <motion.circle
-                cx="80"
-                cy="80"
-                r="74"
-                stroke="#8e35a7"
-                strokeWidth="1.5"
-                fill="transparent"
-                strokeDasharray="465"
-                strokeDashoffset={465 - (465 * progress) / 100}
-                strokeLinecap="round"
-                transition={{ ease: "easeInOut" }}
-              />
+            <svg viewBox="0 0 100 100" className="w-full h-full fill-none stroke-[#d4af37]" strokeWidth="1">
+              {[...Array(8)].map((_, i) => (
+                <circle key={i} cx="50" cy="8" r="2.2" fill="#d4af37" transform={`rotate(${i * 45} 50 50)`} />
+              ))}
+              <circle cx="50" cy="50" r="42" strokeDasharray="4,8" opacity="0.6" />
             </svg>
-
-            {/* Inner Glow Circle */}
-            <div className="absolute w-[130px] h-[130px] rounded-full border border-purple-300/20 bg-stone-900/50 flex items-center justify-center shadow-[0_0_20px_rgba(142,53,167,0.12)]">
-              {/* Couple Monogram Letters */}
-              <motion.span
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3, duration: 0.8 }}
-                className="font-serif text-5xl font-light text-purple-350 tracking-wider"
-              >
-                S <span className="text-xl text-purple-400 font-sans">&</span> A
-              </motion.span>
-            </div>
           </motion.div>
 
-          {/* SruMan Logo Reveal */}
+          {/* Counter-rotating Inner Orbit Ring */}
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-            className="text-center"
-          >
-            <h1 className="font-serif text-4xl font-light tracking-[0.25em] text-[#fdfbf7] mb-2 uppercase">
-              SruMan
-            </h1>
-            <p className="font-sans text-xs tracking-[0.2em] text-purple-400/70 uppercase mb-8">
-              અનંતકાળની શરૂઆત
-            </p>
-          </motion.div>
+            animate={{ rotate: -360 }}
+            transition={{ duration: 16, repeat: Infinity, ease: "linear" }}
+            className="absolute inset-2 rounded-full border border-dotted border-amber-300/40"
+          />
 
-          {/* Progress Indicator */}
-          <div className="w-48 h-[1px] bg-stone-850 relative overflow-hidden mb-3">
-            <motion.div
-              className="absolute left-0 top-0 h-full bg-gradient-to-r from-purple-600 to-purple-400"
-              style={{ width: `${progress}%` }}
-              transition={{ ease: "easeInOut" }}
+          {/* Central White Medallion with SruMan Logo */}
+          <div className="absolute inset-3 rounded-full border-2 border-amber-400/60 flex items-center justify-center bg-white p-2 shadow-[0_0_25px_rgba(212,175,55,0.45)] overflow-hidden">
+            <img
+              src="/logos/sruman-logo.png"
+              alt="SruMan Logo"
+              className="w-full h-full object-contain scale-110 drop-shadow-sm"
             />
           </div>
+        </motion.div>
 
+        {/* SruMan Brand Name */}
+        <motion.h1
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="font-serif text-2xl sm:text-3xl font-bold tracking-[0.25em] text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-[#f7e4a9] to-amber-200 uppercase mb-2 drop-shadow-[0_2px_12px_rgba(212,175,55,0.4)]"
+        >
+          SruMan
+        </motion.h1>
+
+        {/* Shimmering Gold Light Divider */}
+        <div className="w-36 sm:w-44 h-[1.5px] bg-gradient-to-r from-transparent via-amber-400/70 to-transparent relative overflow-hidden mb-3.5">
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.6 }}
-            className="font-sans text-[10px] tracking-[0.1em] text-purple-300/60 uppercase"
-          >
-            આપને ઉજવણી માટે આમંત્રિત કરીએ છીએ {Math.round(progress)}%
-          </motion.div>
+            animate={{ x: ["-100%", "100%"] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+            className="w-20 h-full bg-gradient-to-r from-transparent via-amber-200 to-transparent"
+          />
         </div>
-      </motion.div>
-    </AnimatePresence>
+
+        {/* Animated Loading Text */}
+        <motion.div
+          animate={{ opacity: [0.7, 1, 0.7] }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          className="font-serif text-xs sm:text-sm tracking-[0.28em] uppercase text-amber-300/90 text-center font-medium"
+        >
+          {text}
+        </motion.div>
+
+        {/* Optional Subtitle / Mantra */}
+        {subtitle && (
+          <div className="font-sans text-[10px] sm:text-[11px] tracking-[0.2em] text-amber-200/60 uppercase mt-1.5 font-light">
+            {subtitle}
+          </div>
+        )}
+      </div>
+    </motion.div>
   );
 }

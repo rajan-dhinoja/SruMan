@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Key, Phone, Mail } from "lucide-react";
 import Image from "next/image";
+import Preloader from "@/components/Preloader";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface PalaceGateEntryProps {
@@ -176,39 +177,13 @@ export default function PalaceGateEntry({ onEnter }: PalaceGateEntryProps) {
           {/* Solid Royal Preloader Curtain: stays completely opaque until all images are decoded */}
           <AnimatePresence>
             {!assetsLoaded && (
-              <motion.div
+              <Preloader
                 key="palace-gate-preloader"
-                initial={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5, ease: "easeInOut" }}
-                className="absolute inset-0 z-[60] flex flex-col items-center justify-center bg-[#12021c]"
-              >
-                <motion.div
-                  animate={{ opacity: [0.5, 1, 0.5], scale: [0.95, 1.05, 0.95] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                  className="relative w-24 h-24 mb-6 flex items-center justify-center"
-                >
-                  {/* Outer spinning ring for preloader */}
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                    className="absolute inset-0"
-                  >
-                    <svg viewBox="0 0 100 100" className="w-full h-full fill-none stroke-[#d4af37]" strokeWidth="1">
-                      {[...Array(8)].map((_, i) => (
-                        <circle key={i} cx="50" cy="8" r="2" fill="#d4af37" transform={`rotate(${i * 45} 50 50)`} />
-                      ))}
-                      <circle cx="50" cy="50" r="42" strokeDasharray="4,8" opacity="0.5" />
-                    </svg>
-                  </motion.div>
-                  <div className="absolute inset-2 rounded-full border border-[#d4af37]/40 flex items-center justify-center bg-white p-1 shadow-[0_0_20px_rgba(212,175,55,0.4)]">
-                    <img src="/logos/sruman-logo.png" alt="SruMan Logo" className="w-full h-full object-contain" />
-                  </div>
-                </motion.div>
-                <div className="text-[#d4af37] font-serif text-sm tracking-[0.3em] uppercase animate-pulse">
-                  {t("gateEntry.openGateBtn") ? "Loading Palace Gates..." : "Loading Palace Gates..."}
-                </div>
-              </motion.div>
+                text="Loading Palace Gates..."
+                subtitle="Auspicious Royal Celebration"
+                fullScreen={false}
+                zIndex={60}
+              />
             )}
           </AnimatePresence>
 

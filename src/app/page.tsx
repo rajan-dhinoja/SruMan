@@ -28,7 +28,9 @@ import {
   PartyPopper,
 } from "lucide-react";
 import SparklesCanvas from "@/components/SparklesCanvas";
+import Preloader from "@/components/Preloader";
 import confetti from "canvas-confetti";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface EngagementTime {
   months: number;
@@ -59,9 +61,24 @@ const parseCeremonyTime = (timeStr: string | undefined, defaultIso: string): Dat
 };
 
 export default function SruManHub() {
+  const { language } = useLanguage();
   const [mounted, setMounted] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [copiedContact, setCopiedContact] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
+
+  // Dynamic portal title management
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      if (language === "gu") {
+        document.title = "SruMan | સેલિબ્રેશન પોર્ટલ • Srushti & Aman";
+      } else if (language === "hi") {
+        document.title = "SruMan | सेलिब्रेशन पोर्टल • Srushti & Aman";
+      } else {
+        document.title = "SruMan | Celebration Portal • Srushti & Aman";
+      }
+    }
+  }, [language]);
 
   // Interactive 3D Crest Tilt & Royal Blessings
   const [blessingsCount, setBlessingsCount] = useState(108);
@@ -199,7 +216,13 @@ export default function SruManHub() {
 
     calculateEngagementTime();
     const interval = setInterval(calculateEngagementTime, 1000);
-    return () => clearInterval(interval);
+    const loadTimer = setTimeout(() => {
+      setPageLoading(false);
+    }, 750);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(loadTimer);
+    };
   }, [targetEngagementDate, completionEngagementDate]);
 
   // Trigger celebration confetti
@@ -261,7 +284,19 @@ export default function SruManHub() {
   ];
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-[#14031c] via-[#21072b] to-[#0a000f] text-[#fbf9fb] overflow-x-hidden select-none">
+    <>
+      <AnimatePresence>
+        {pageLoading && (
+          <Preloader
+            key="hub-preloader"
+            text="Loading SruMan Hub..."
+            subtitle="Welcome To The Celebrations"
+            onComplete={() => setPageLoading(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      <div className="relative min-h-screen bg-gradient-to-b from-[#14031c] via-[#21072b] to-[#0a000f] text-[#fbf9fb] overflow-x-hidden select-none">
       {/* 60fps Ambient Gold Sparkles */}
       <SparklesCanvas />
 
@@ -585,9 +620,7 @@ export default function SruManHub() {
               <span className="font-serif text-xs sm:text-sm font-semibold text-amber-200 tracking-wider">
                 Shower Royal Blessings (પુષ્પવૃષ્ટિ)
               </span>
-              <span className="px-2.5 py-0.5 rounded-full bg-amber-400/20 border border-amber-400/35 text-[11px] font-sans font-bold text-amber-300">
-                {blessingsCount}
-              </span>
+              <Heart className="w-4 h-4 text-rose-400 fill-rose-500 group-hover:scale-125 transition-transform duration-300 animate-pulse" />
             </motion.button>
           </div>
         </motion.div>
@@ -1038,5 +1071,6 @@ export default function SruManHub() {
         </motion.div>
       </div>
     </div>
+    </>
   );
 }

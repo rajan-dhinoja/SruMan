@@ -36,10 +36,10 @@ export const metadata: Metadata = {
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://sruman-engagement.vercel.app")
   ),
   title: {
-    default: "SruMan | Srushti અને Aman ની રિંગ સેરેમની",
+    default: "SruMan | Celebration Portal • Srushti & Aman",
     template: "%s | SruMan",
   },
-  description: "Srushti અને Aman ની ભવ્ય રિંગ સેરેમની અને ડિજિટલ આમંત્રણ પત્રિકા. અમારા અનંતકાળની શરૂઆતની ઉજવણીમાં સામેલ થવા માટે સ્નેહભર્યું આમંત્રણ.",
+  description: "Official Celebration Portal of Srushti & Aman. Explore joyous ring ceremony memories and join us in celebrating our royal wedding festivities.",
   applicationName: "SruMan",
   manifest: "/site.webmanifest",
   icons: {
@@ -56,8 +56,8 @@ export const metadata: Metadata = {
     shortcut: "/favicon.ico",
   },
   openGraph: {
-    title: "SruMan | Srushti અને Aman ની રિંગ સેરેમની",
-    description: "Srushti અને Aman ની ભવ્ય સગાઈ વિધિની ડિજિટલ કંકોતરી. આમંત્રણ પત્રિકા, પ્રેમ કહાની, સમારોહ સ્થળ અને ઓનલાઇન હાજરી પત્રક (RSVP).",
+    title: "SruMan | Celebration Portal • Srushti & Aman",
+    description: "Official Celebration Portal of Srushti & Aman. Explore joyous ring ceremony memories and join us in celebrating our royal wedding festivities.",
     url: "/",
     siteName: "SruMan",
     images: [
@@ -68,14 +68,14 @@ export const metadata: Metadata = {
         alt: "SruMan | Srushti & Aman Royal Ring Ceremony & Wedding Celebration",
       },
     ],
-    locale: "gu_IN",
-    alternateLocale: ["en_US"],
+    locale: "en_US",
+    alternateLocale: ["gu_IN", "hi_IN"],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "SruMan | Srushti અને Aman ની રિંગ સેરેમની",
-    description: "Srushti અને Aman ની ભવ્ય સગાઈ વિધિની ડિજિટલ કંકોતરી અને આમંત્રણ પત્રિકા.",
+    title: "SruMan | Celebration Portal • Srushti & Aman",
+    description: "Official Celebration Portal of Srushti & Aman. Explore joyous ring ceremony memories and join us in celebrating our royal wedding festivities.",
     images: ["/og-image.png"],
   },
 };

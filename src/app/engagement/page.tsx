@@ -115,7 +115,7 @@ export default function EngagementPage() {
       }
     }());
   };
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   
   const audioContextRef = useRef<AudioContext | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
@@ -238,6 +238,30 @@ export default function EngagementPage() {
       component: <CreditsSection />
     }
   ], [t]);
+
+  // Dynamic portal and page section title management
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      const activeSecName = sections[activeSection]?.name;
+      if (activeSection === 0) {
+        if (language === "gu") {
+          document.title = "SruMan | Srushti અને Aman ની રિંગ સેરેમની";
+        } else if (language === "hi") {
+          document.title = "SruMan | सृष्टि और अमन की सगाई समारोह";
+        } else {
+          document.title = "SruMan | Engagement Ceremony • Srushti & Aman";
+        }
+      } else {
+        if (language === "gu") {
+          document.title = `SruMan | ${activeSecName || "સગાઈ"} • રિંગ સેરેમની`;
+        } else if (language === "hi") {
+          document.title = `SruMan | ${activeSecName || "सगाई"} • सगाई समारोह`;
+        } else {
+          document.title = `SruMan | ${activeSecName || "Ceremony"} • Engagement Portal`;
+        }
+      }
+    }
+  }, [activeSection, language, sections]);
 
   const handleScroll = () => {
     const scrollPos = window.scrollY + window.innerHeight / 3;
