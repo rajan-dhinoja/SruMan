@@ -12,7 +12,6 @@ import EventDetails from "@/components/EventDetails";
 import Blessings from "@/components/Blessings";
 import PalaceGateEntry from "@/components/PalaceGateEntry";
 import { useLanguage } from "@/context/LanguageContext";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
 import confetti from "canvas-confetti";
 import HubBridge from "@/components/HubBridge";
 
@@ -350,8 +349,6 @@ export default function EngagementPage() {
           ))}
         </div>
       )}
-
-      <LanguageSwitcher />
     </>
   );
 }

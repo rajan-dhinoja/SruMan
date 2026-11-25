@@ -142,6 +142,89 @@ export interface TranslationDict {
       play: string;
     };
   };
+  preloader: {
+    defaultText: string;
+    defaultSubtitle: string;
+    hubText: string;
+    hubSubtitle: string;
+    gateText: string;
+    gateSubtitle: string;
+    weddingText: string;
+    weddingSubtitle: string;
+  };
+  hub: {
+    tapCrestTitle: string;
+    tapCrestBadge: string;
+    welcomePrefix: string;
+    brideFirstName: string;
+    groomFirstName: string;
+    quote: string;
+    subtitlePart1: string;
+    subtitleHighlight1: string;
+    subtitlePart2: string;
+    subtitleHighlight2: string;
+    subtitlePart3: string;
+    subtitleHighlight3: string;
+    subtitlePart4: string;
+    showerRoyalBlessings: string;
+    weddingCard: {
+      primaryBadge: string;
+      comingSoonBadge: string;
+      title: string;
+      tagline: string;
+      desc: string;
+      launchingTitle: string;
+      stayTunedBadge: string;
+      launchingDesc: string;
+    };
+    timelineTitle: string;
+    engagementCard: {
+      foreverBadge: string;
+      reliveBadge: string;
+      title: string;
+      tagline: string;
+      dateLabel: string;
+      dateValue: string;
+      muhuratLabel: string;
+      venueLabel: string;
+      venueValue: string;
+      countdownOngoing: string;
+      countdownPast: string;
+      countdownUpcoming: string;
+      months: string;
+      days: string;
+      hours: string;
+      mins: string;
+      secs: string;
+      exploreHighlights: string;
+      features: {
+        gate: { title: string; subtitle: string; desc: string; badge: string };
+        blessings: { title: string; subtitle: string; desc: string; badge: string };
+        nimantrak: { title: string; subtitle: string; desc: string; badge: string };
+        trilingual: { title: string; subtitle: string; desc: string; badge: string };
+      };
+      enterPortalBtn: string;
+      showerBlessingsBtn: string;
+      showerBlessingsTitle: string;
+    };
+    dotr: {
+      craftedBadge: string;
+      companyName: string;
+      tagline: string;
+      pillar1Title: string;
+      pillar1Desc: string;
+      pillar2Title: string;
+      pillar2Desc: string;
+      pillar3Title: string;
+      pillar3Desc: string;
+      visitWebsite: string;
+      copyInfo: string;
+      copied: string;
+      copyTitle: string;
+      designedWithLove: string;
+      copyright: string;
+    };
+  };
 }
 
 export const translations: Record<"gu" | "en" | "hi", TranslationDict> = {
@@ -289,6 +372,109 @@ export const translations: Record<"gu" | "en" | "hi", TranslationDict> = {
         play: "મ્યુઝિક ચાલુ કરો",
       },
     },
+    preloader: {
+      defaultText: "ઉજવણી લોડ થઈ રહી છે...",
+      defaultSubtitle: "સૃષ્ટિ અને અમન • શુભ પ્રસંગો",
+      hubText: "શ્રુમન હબ લોડ થઈ રહ્યું છે...",
+      hubSubtitle: "ઉજવણીમાં આપનું સ્વાગત છે",
+      gateText: "રાજમહેલના દ્વાર લોડ થઈ રહ્યા છે...",
+      gateSubtitle: "મંગલમય શાહી ઉજવણી",
+      weddingText: "શાહી લગ્ન સમારોહ...",
+      weddingSubtitle: "ટૂંક સમયમાં આવી રહ્યું છે",
+    },
+    hub: {
+      tapCrestTitle: "શાહી આશીર્વાદ માટે ક્લિક કરો",
+      tapCrestBadge: "શાહી આશીર્વાદ માટે મુદ્રા પર ટૅપ કરો",
+      welcomePrefix: "ઉજવણીમાં આપનું સ્વાગત છે",
+      brideFirstName: "સૃષ્ટિ",
+      groomFirstName: "અમન",
+      quote: "“બે હૃદય, બે આત્માઓ, પ્રેમની એક અનંત સફર”",
+      subtitlePart1: "અમારા ",
+      subtitleHighlight1: "શુભ પ્રસંગો",
+      subtitlePart2: " નિહાળો, ",
+      subtitleHighlight2: "સગાઈની મધુર યાદો",
+      subtitlePart3: " તાજી કરો, અને ",
+      subtitleHighlight3: "શાહી લગ્ન સમારોહ",
+      subtitlePart4: " માટે જોડાયેલા રહો.",
+      showerRoyalBlessings: "શાહી આશીર્વાદ વરસાવો (પુષ્પવૃષ્ટિ)",
+      weddingCard: {
+        primaryBadge: "મુખ્ય ઉજવણી",
+        comingSoonBadge: "ટૂંક સમયમાં",
+        title: "શાહી લગ્ન સમારોહ",
+        tagline: "પવિત્ર ફેરા અને અનંત પ્રેમનો ભવ્ય ઉત્સવ",
+        desc: "અમારા ભવ્ય લગ્ન સમારોહની પવિત્ર યાત્રા શરૂ થઈ ચૂકી છે. મંડપ મુહૂર્ત, હલ્દી, મહેંદી, સંગીત, જાન, ફેરા અને રિસેપ્શન સહિતના વિવિધ પ્રસંગોની તૈયારીઓ ચાલી રહી છે.",
+        launchingTitle: "વેડિંગ પોર્ટલ ટૂંક સમયમાં શરૂ થશે",
+        stayTunedBadge: "જોડાયેલા રહો",
+        launchingDesc: "પ્રસંગોની રૂપરેખા, શુભ મુહૂર્ત, સ્થળનું માર્ગદર્શન અને લાઇવ અપડેટ્સ સાથેનો ભવ્ય ડિજિટલ લગ્ન અનુભવ ટૂંક સમયમાં રજૂ કરવામાં આવશે.",
+      },
+      timelineTitle: "ઉજવણીના ફૂલડાં માટે ક્લિક કરો!",
+      engagementCard: {
+        foreverBadge: "જ્યાંથી અનંત સફરની શરૂઆત થઈ",
+        reliveBadge: "યાદો તાજી કરો",
+        title: "સગાઈ સમારોહ",
+        tagline: "ભવ્ય રિંગ સેરેમની, રાજમહેલના દ્વાર અને પવિત્ર વચનો",
+        dateLabel: "તારીખ:",
+        dateValue: "૧૮ ઓગસ્ટ ૨૦૨૬ (શ્રાવણ સુદ-૬)",
+        muhuratLabel: "મુહૂર્ત:",
+        venueLabel: "સ્થળ:",
+        venueValue: "પરિશ્રમ ધ લોન્સ, ગોંડલ",
+        countdownOngoing: "શુભ સગાઈ પ્રસંગ હાલમાં ચાલી રહ્યો છે",
+        countdownPast: "શુભ પ્રસંગની અવિસ્મરણીય પળોને વીતેલો સમય",
+        countdownUpcoming: "શુભ રિંગ સેરેમનીની કાઉન્ટડાઉન ગણતરી",
+        months: "મહિના",
+        days: "દિવસ",
+        hours: "કલાક",
+        mins: "મિનિટ",
+        secs: "સેકન્ડ",
+        exploreHighlights: "✦ પોર્ટલની ખાસ વિશેષતાઓ જુઓ:",
+        features: {
+          gate: {
+            title: "રાજમહેલ દ્વાર પ્રવેશ",
+            subtitle: "સિનેમેટિક 3D ઓપનિંગ",
+            desc: "શરણાઈ અને નગારાના મધુર સૂર સાથે મહેમાનોનું શાહી ઉજવણીમાં સ્વાગત કરતી ભવ્ય રાજમહેલના દ્વારની ઝાંખી.",
+            badge: "સિનેમેટિક 3D",
+          },
+          blessings: {
+            title: "ડિજિટલ આશીર્વાદ પુસ્તિકા",
+            subtitle: "હૃદયસ્પર્શી શુભેચ્છાઓ",
+            desc: "તાત્કાલિક લાઇવ પ્રિવ્યુ અને યાદગાર સંદેશાઓ સાથે આપની શુભેચ્છાઓ, પ્રાર્થના અને પરિવારના આશીર્વાદ મોકલો.",
+            badge: "લાઇવ શુભેચ્છા",
+          },
+          nimantrak: {
+            title: "પરંપરાગત નિમંત્રક પત્રિકા",
+            subtitle: "પવિત્ર શાહી આમંત્રણ",
+            desc: "પરિવારની વંશાવળી, શુભ મુહૂર્ત અને પવિત્ર વૈદિક શ્લોકો રજૂ કરતી ભવ્ય ડિજિટલ કંકોત્રી / પત્રિકા.",
+            badge: "પવિત્ર પત્રિકા",
+          },
+          trilingual: {
+            title: "ત્રિભાષી અનુભવ",
+            subtitle: "ગુજરાતી • હિન્દી • અંગ્રેજી",
+            desc: "ગુજરાતી (માતૃભાષા), હિન્દી અને અંગ્રેજી વચ્ચે સરળ અને તાત્કાલિક બદલાવ જેથી પરિવારના દરેક સભ્યને પોતાપણું લાગે.",
+            badge: "બહુભાષી",
+          },
+        },
+        enterPortalBtn: "સગાઈ પોર્ટલમાં પ્રવેશ કરો અને યાદો તાજી કરો",
+        showerBlessingsBtn: "આશીર્વાદ વરસાવો",
+        showerBlessingsTitle: "ઉજવણીના ફૂલડાંથી શુભેચ્છા આપો",
+      },
+      dotr: {
+        craftedBadge: "પ્રેમ અને નવીનતા સાથે નિર્મિત",
+        companyName: "DHINOJA OmniTech Resolutions",
+        tagline: "ઉચ્ચ-ગુણવત્તાવાળા ડિજિટલ અનુભવો અને રોયલ વેડિંગ સ્યુટ્સના નિર્માતા",
+        pillar1Title: "કસ્ટમ વેબ પ્લેટફોર્મ્સ",
+        pillar1Desc: "Next.js, React અને આધુનિક વેબ એન્જિનિયરિંગ",
+        pillar2Title: "લક્ઝરી મોશન અને 3D",
+        pillar2Desc: "60fps એનિમેશન, વેબ ઓડિયો અને ઇન્ટરેક્ટિવ UI",
+        pillar3Title: "એન્ટરપ્રાઇઝ સોલ્યુશન્સ",
+        pillar3Desc: "ક્લાઉડ આર્કિટેક્ચર અને સ્કેલેબલ ડિજિટલ સિસ્ટમ્સ",
+        visitWebsite: "dotr.in ની મુલાકાત લો",
+        copyInfo: "માહિતી કોપી કરો",
+        copied: "કોપી થઈ ગયું!",
+        copyTitle: "સંપર્કની તમામ વિગતો કોપી કરો",
+        designedWithLove: "સૃષ્ટિ અને અમન માટે ♥ થી ડિઝાઇન અને નિર્મિત",
+        copyright: "© ૨૦૨૬ DHINOJA OmniTech Resolutions (DOTR) • સર્વ હક અબાધિત",
+      },
+    },
   },
   en: {
     welcome: {
@@ -434,6 +620,109 @@ export const translations: Record<"gu" | "en" | "hi", TranslationDict> = {
         play: "Play Music",
       },
     },
+    preloader: {
+      defaultText: "Loading Celebrations...",
+      defaultSubtitle: "Srushti & Aman • Auspicious Festivities",
+      hubText: "Loading SruMan Hub...",
+      hubSubtitle: "Welcome To The Celebrations",
+      gateText: "Loading Palace Gates...",
+      gateSubtitle: "Auspicious Royal Celebration",
+      weddingText: "The Royal Wedding...",
+      weddingSubtitle: "Coming Soon",
+    },
+    hub: {
+      tapCrestTitle: "Click for Royal Blessings",
+      tapCrestBadge: "Tap Crest For Royal Blessings",
+      welcomePrefix: "Welcome To The Celebrations of",
+      brideFirstName: "Srushti",
+      groomFirstName: "Aman",
+      quote: "“Two hearts, two souls, one eternal journey of love”",
+      subtitlePart1: "Discover our ",
+      subtitleHighlight1: "auspicious celebrations",
+      subtitlePart2: ", relive the ",
+      subtitleHighlight2: "joyous engagement memories",
+      subtitlePart3: ", and stay tuned for the ",
+      subtitleHighlight3: "royal wedding",
+      subtitlePart4: ".",
+      showerRoyalBlessings: "Shower Royal Blessings (પુષ્પવૃષ્ટિ)",
+      weddingCard: {
+        primaryBadge: "Primary Celebration",
+        comingSoonBadge: "Coming Soon",
+        title: "The Royal Wedding",
+        tagline: "A grand celebration of sacred vows & forever love",
+        desc: "The sacred journey toward our grand wedding celebration is underway. Multi-day festivities including Mandap Muhurat, Haldi, Mehendi, Sangeet, Baarat, Pheras, and Reception are in preparation.",
+        launchingTitle: "Launching Wedding Portal Soon",
+        stayTunedBadge: "Stay Tuned",
+        launchingDesc: "The grand digital wedding experience featuring ceremony itineraries, auspicious muhurats, venue navigation, and live updates will be unveiled soon.",
+      },
+      timelineTitle: "Click for celebration sparkles!",
+      engagementCard: {
+        foreverBadge: "Where Forever Began",
+        reliveBadge: "Relive The Memories",
+        title: "The Engagement Ceremony",
+        tagline: "The grand ring ceremony, palace gates & sacred promises",
+        dateLabel: "Date:",
+        dateValue: "18 Aug 2026 (શ્રાવણ સુદ-૬)",
+        muhuratLabel: "Muhurat:",
+        venueLabel: "Venue:",
+        venueValue: "Parishram The Lawns, Gondal",
+        countdownOngoing: "The Auspicious Ceremony is Ongoing",
+        countdownPast: "Cherished Moments Since The Auspicious Ceremony",
+        countdownUpcoming: "Countdown To The Auspicious Ring Ceremony",
+        months: "MONTHS",
+        days: "DAYS",
+        hours: "HOURS",
+        mins: "MINS",
+        secs: "SECS",
+        exploreHighlights: "✦ Explore Portal Highlights Inside:",
+        features: {
+          gate: {
+            title: "Royal Palace Gate Entrance",
+            subtitle: "Cinematic 3D Opening",
+            desc: "An enchanting royal palace gate sequence with authentic trumpets and shehnai tunes welcoming guests into the royal celebration.",
+            badge: "Cinematic 3D",
+          },
+          blessings: {
+            title: "Digital Blessings Guestbook",
+            subtitle: "Personal Heartfelt Wishes",
+            desc: "Send custom prayers, congratulations, and family blessings with instant live preview and heartfelt keepsake messages.",
+            badge: "Interactive Wishes",
+          },
+          nimantrak: {
+            title: "Traditional Nimantrak Patrika",
+            subtitle: "Sacred Royal Invitation",
+            desc: "A timeless ceremonial digital kankotri / patrika presenting the family lineage, auspicious muhurats, and sacred Vedic verses.",
+            badge: "Sacred Patrika",
+          },
+          trilingual: {
+            title: "Trilingual Experience",
+            subtitle: "Gujarati • Hindi • English",
+            desc: "Seamless live toggle between Gujarati (માતૃભાષા), Hindi, and English so every family member feels at home.",
+            badge: "Multilingual",
+          },
+        },
+        enterPortalBtn: "Enter Engagement Portal & Relive Memories",
+        showerBlessingsBtn: "Shower Blessings",
+        showerBlessingsTitle: "Celebrate with festive sparkles",
+      },
+      dotr: {
+        craftedBadge: "Crafted With Passion & Innovation By",
+        companyName: "DHINOJA OmniTech Resolutions",
+        tagline: "Architecting High-Performance Digital Experiences & Royal Wedding Suites",
+        pillar1Title: "Custom Web Platforms",
+        pillar1Desc: "Next.js, React & modern web engineering",
+        pillar2Title: "Luxury Motion & 3D",
+        pillar2Desc: "60fps animations, Web Audio & interactive UI",
+        pillar3Title: "Enterprise Solutions",
+        pillar3Desc: "Cloud architecture & scalable digital systems",
+        visitWebsite: "Visit dotr.in",
+        copyInfo: "Copy Info",
+        copied: "Copied!",
+        copyTitle: "Copy all contact details",
+        designedWithLove: "Designed & Developed with ♥ for Srushti & Aman",
+        copyright: "© 2026 DHINOJA OmniTech Resolutions (DOTR) • All Rights Reserved",
+      },
+    },
   },
   hi: {
     welcome: {
@@ -577,6 +866,109 @@ export const translations: Record<"gu" | "en" | "hi", TranslationDict> = {
       audio: {
         mute: "म्यूट करें",
         play: "म्यूजिक चलाएं",
+      },
+    },
+    preloader: {
+      defaultText: "उत्सव लोड हो रहा है...",
+      defaultSubtitle: "सृष्टि और अमन • शुभ समारोह",
+      hubText: "श्रुमन हब लोड हो रहा है...",
+      hubSubtitle: "उत्सव में आपका स्वागत है",
+      gateText: "राजमहल के द्वार लोड हो रहे हैं...",
+      gateSubtitle: "मंगलमय शाही उत्सव",
+      weddingText: "शाही विवाह समारोह...",
+      weddingSubtitle: "जल्द आ रहा है",
+    },
+    hub: {
+      tapCrestTitle: "शाही आशीर्वाद के लिए क्लिक करें",
+      tapCrestBadge: "शाही आशीर्वाद के लिए मुकुट चिह्न पर टैप करें",
+      welcomePrefix: "उत्सव में आपका हार्दिक स्वागत है",
+      brideFirstName: "सृष्टि",
+      groomFirstName: "अमन",
+      quote: "“दो हृदय, दो आत्माएँ, प्रेम की एक अनंत यात्रा”",
+      subtitlePart1: "हमारे ",
+      subtitleHighlight1: "मंगलमय उत्सवों",
+      subtitlePart2: " को जानें, ",
+      subtitleHighlight2: "सगाई की मधुर यादें",
+      subtitlePart3: " ताज़ा करें, और ",
+      subtitleHighlight3: "शाही विवाह समारोह",
+      subtitlePart4: " के लिए जुड़े रहें।",
+      showerRoyalBlessings: "शाही आशीर्वाद बरसाएं (पुष्पवर्षा)",
+      weddingCard: {
+        primaryBadge: "मुख्य समारोह",
+        comingSoonBadge: "जल्द आ रहा है",
+        title: "शाही विवाह समारोह",
+        tagline: "पवित्र फेरों और अनंत प्रेम का भव्य उत्सव",
+        desc: "हमारे भव्य विवाह समारोह की पावन यात्रा शुरू हो चुकी है। मंडप मुहूर्त, हल्दी, मेहंदी, संगीत, बारात, फेरे और रिसेप्शन सहित बहु-दिवसीय उत्सवों की तैयारियाँ चल रही हैं।",
+        launchingTitle: "वेडिंग पोर्टल जल्द लॉन्च हो रहा है",
+        stayTunedBadge: "जुड़े रहें",
+        launchingDesc: "समारोह की रूपरेखा, शुभ मुहूर्त, स्थल मार्गदर्शन और लाइव अपडेट्स के साथ भव्य डिजिटल विवाह अनुभव जल्द ही प्रस्तुत किया जाएगा।",
+      },
+      timelineTitle: "उत्सव की चमक के लिए क्लिक करें!",
+      engagementCard: {
+        foreverBadge: "जहाँ से अनंत सफर शुरू हुआ",
+        reliveBadge: "यादें ताज़ा करें",
+        title: "सगाई समारोह",
+        tagline: "भव्य रिंग सेरेमनी, राजमहल के द्वार और पवित्र वचन",
+        dateLabel: "दिनांक:",
+        dateValue: "१८ अगस्त २०२६ (श्रावण शुक्ल-६)",
+        muhuratLabel: "मुहूर्त:",
+        venueLabel: "स्थान:",
+        venueValue: "परिश्रम द लॉन्स, गोंडल",
+        countdownOngoing: "शुभ सगाई समारोह अभी चल रहा है",
+        countdownPast: "शुभ समारोह की मधुर यादों को बीता समय",
+        countdownUpcoming: "शुभ रिंग सेरेमनी की उल्टी गिनती",
+        months: "महीने",
+        days: "दिन",
+        hours: "घंटे",
+        mins: "मिनट",
+        secs: "सेकंड",
+        exploreHighlights: "✦ पोर्टल की मुख्य विशेषताएँ देखें:",
+        features: {
+          gate: {
+            title: "राजमहल द्वार प्रवेश",
+            subtitle: "सिनेमैटिक 3D ओपनिंग",
+            desc: "शहनाई और नगाड़ों की मधुर ध्वनि के साथ मेहमानों का शाही उत्सव में स्वागत करता हुआ भव्य राजमहल द्वार।",
+            badge: "सिनेमैटिक 3D",
+          },
+          blessings: {
+            title: "डिजिटल आशीर्वाद पुस्तिका",
+            subtitle: "हृदयस्पर्शी शुभकामनाएँ",
+            desc: "त्वरित लाइव प्रीव्यू और यादगार संदेशों के साथ अपनी प्रार्थनाएँ, बधाई और पारिवारिक आशीर्वाद भेजें।",
+            badge: "लाइव शुभकामनाएँ",
+          },
+          nimantrak: {
+            title: "पारंपरिक निमंत्रक पत्रिका",
+            subtitle: "पवित्र शाही आमंत्रण",
+            desc: "परिवार की वंशावली, शुभ मुहूर्त और पवित्र वैदिक श्लोकों को प्रस्तुत करती हुई भव्य डिजिटल कंकौत्री / पत्रिका।",
+            badge: "पवित्र पत्रिका",
+          },
+          trilingual: {
+            title: "त्रिभाषी अनुभव",
+            subtitle: "गुजराती • हिन्दी • अंग्रेज़ी",
+            desc: "गुजराती, हिन्दी और अंग्रेज़ी के बीच सहज लाइव स्विच ताकि परिवार का हर सदस्य जुड़ा हुआ महसूस करे।",
+            badge: "बहुभाषी",
+          },
+        },
+        enterPortalBtn: "सगाई पोर्टल में प्रवेश करें और यादें ताज़ा करें",
+        showerBlessingsBtn: "आशीर्वाद बरसाएं",
+        showerBlessingsTitle: "उत्सव की चमक के साथ बधाई दें",
+      },
+      dotr: {
+        craftedBadge: "प्रेम और नवाचार के साथ निर्मित",
+        companyName: "DHINOJA OmniTech Resolutions",
+        tagline: "उच्च-प्रदर्शन डिजिटल अनुभवों और रॉयल वेडिंग सुइट्स के निर्माता",
+        pillar1Title: "कस्टम वेब प्लेटफ़ॉर्म",
+        pillar1Desc: "Next.js, React और आधुनिक वेब इंजीनियरिंग",
+        pillar2Title: "लक्ज़री मोशन और 3D",
+        pillar2Desc: "60fps एनीमेशन, वेब ऑडियो और इंटरैक्टिव UI",
+        pillar3Title: "एंटरप्राइज़ सॉल्यूशंस",
+        pillar3Desc: "क्लाउड आर्किटेक्चर और स्केलेबल डिजिटल सिस्टम",
+        visitWebsite: "dotr.in पर जाएं",
+        copyInfo: "जानकारी कॉपी करें",
+        copied: "कॉपी हो गया!",
+        copyTitle: "संपर्क के सभी विवरण कॉपी करें",
+        designedWithLove: "सृष्टि और अमन के लिए ♥ से डिज़ाइन और विकसित",
+        copyright: "© २०२६ DHINOJA OmniTech Resolutions (DOTR) • सर्वाधिकार सुरक्षित",
       },
     },
   },

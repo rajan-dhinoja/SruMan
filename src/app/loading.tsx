@@ -3,8 +3,8 @@ import Preloader from "@/components/Preloader";
 export default function Loading() {
   return (
     <Preloader
-      text="Loading Celebrations..."
-      subtitle="Srushti & Aman • Auspicious Festivities"
+      textKey="preloader.defaultText"
+      subtitleKey="preloader.defaultSubtitle"
       fullScreen={true}
     />
   );

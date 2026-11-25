@@ -61,7 +61,7 @@ const parseCeremonyTime = (timeStr: string | undefined, defaultIso: string): Dat
 };
 
 export default function SruManHub() {
-  const { language } = useLanguage();
+  const { language, t, formatNumber } = useLanguage();
   const [mounted, setMounted] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [copiedContact, setCopiedContact] = useState(false);
@@ -252,34 +252,34 @@ export default function SruManHub() {
     {
       id: 0,
       icon: <Landmark className="w-5 h-5 text-amber-300" />,
-      title: "Royal Palace Gate Entrance",
-      subtitle: "Cinematic 3D Opening",
-      desc: "An enchanting royal palace gate sequence with authentic trumpets and shehnai tunes welcoming guests into the royal celebration.",
-      badge: "Cinematic 3D",
+      title: t("hub.engagementCard.features.gate.title"),
+      subtitle: t("hub.engagementCard.features.gate.subtitle"),
+      desc: t("hub.engagementCard.features.gate.desc"),
+      badge: t("hub.engagementCard.features.gate.badge"),
     },
     {
       id: 1,
       icon: <MessageSquare className="w-5 h-5 text-amber-300" />,
-      title: "Digital Blessings Guestbook",
-      subtitle: "Personal Heartfelt Wishes",
-      desc: "Send custom prayers, congratulations, and family blessings with instant live preview and heartfelt keepsake messages.",
-      badge: "Interactive Wishes",
+      title: t("hub.engagementCard.features.blessings.title"),
+      subtitle: t("hub.engagementCard.features.blessings.subtitle"),
+      desc: t("hub.engagementCard.features.blessings.desc"),
+      badge: t("hub.engagementCard.features.blessings.badge"),
     },
     {
       id: 2,
       icon: <BookOpen className="w-5 h-5 text-amber-300" />,
-      title: "Traditional Nimantrak Patrika",
-      subtitle: "Sacred Royal Invitation",
-      desc: "A timeless ceremonial digital kankotri / patrika presenting the family lineage, auspicious muhurats, and sacred Vedic verses.",
-      badge: "Sacred Patrika",
+      title: t("hub.engagementCard.features.nimantrak.title"),
+      subtitle: t("hub.engagementCard.features.nimantrak.subtitle"),
+      desc: t("hub.engagementCard.features.nimantrak.desc"),
+      badge: t("hub.engagementCard.features.nimantrak.badge"),
     },
     {
       id: 3,
       icon: <Globe className="w-5 h-5 text-amber-300" />,
-      title: "Trilingual Experience",
-      subtitle: "Gujarati • Hindi • English",
-      desc: "Seamless live toggle between Gujarati (માતૃભાષા), Hindi, and English so every family member feels at home.",
-      badge: "Multilingual",
+      title: t("hub.engagementCard.features.trilingual.title"),
+      subtitle: t("hub.engagementCard.features.trilingual.subtitle"),
+      desc: t("hub.engagementCard.features.trilingual.desc"),
+      badge: t("hub.engagementCard.features.trilingual.badge"),
     },
   ];
 
@@ -289,8 +289,8 @@ export default function SruManHub() {
         {pageLoading && (
           <Preloader
             key="hub-preloader"
-            text="Loading SruMan Hub..."
-            subtitle="Welcome To The Celebrations"
+            textKey="preloader.hubText"
+            subtitleKey="preloader.hubSubtitle"
             onComplete={() => setPageLoading(false)}
           />
         )}
@@ -324,7 +324,7 @@ export default function SruManHub() {
               className="flex flex-col items-center"
             >
               <span className="font-serif text-amber-300 text-xs sm:text-sm md:text-base font-bold tracking-[0.15em] uppercase drop-shadow-[0_0_12px_rgba(212,175,55,0.7)] min-h-[32px] flex items-center justify-center">
-                || શ્રીનાથજી બાવા સદા બિરાજમાન છે. ||
+                {t("welcome.shreenathjiMantra")}
               </span>
               <div className="relative w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 mt-3">
                 <Image
@@ -362,7 +362,7 @@ export default function SruManHub() {
                 />
               </div>
               <span className="font-serif text-amber-300 text-xs sm:text-sm md:text-base font-bold tracking-[0.2em] uppercase drop-shadow-[0_0_12px_rgba(212,175,55,0.7)] mt-3">
-                || શ્રી ગણેશાય નમઃ ||
+                {t("welcome.ganeshMantra")}
               </span>
             </motion.div>
 
@@ -374,7 +374,7 @@ export default function SruManHub() {
               className="flex flex-col items-center"
             >
               <span className="font-serif text-amber-300 text-xs sm:text-sm md:text-base font-bold tracking-[0.15em] uppercase drop-shadow-[0_0_12px_rgba(212,175,55,0.7)] min-h-[32px] flex items-center justify-center">
-                || શ્રી કુળદેવીમાં સત્ય છે. ||
+                {t("welcome.kuldeviMantra")}
               </span>
               <div className="relative w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 mt-3">
                 <Image
@@ -402,7 +402,7 @@ export default function SruManHub() {
               className="flex flex-col items-center w-[31%]"
             >
               <span className="font-serif text-amber-300 text-[9px] font-bold text-center leading-tight min-h-[26px] flex items-center justify-center drop-shadow-[0_0_8px_rgba(212,175,55,0.6)]">
-                || શ્રીનાથજી બાવા સદા બિરાજમાન છે. ||
+                {t("welcome.shreenathjiMantra")}
               </span>
               <div className="relative w-16 h-16 xs:w-20 xs:h-20 sm:w-24 sm:h-24 mt-1.5">
                 <Image
@@ -440,7 +440,7 @@ export default function SruManHub() {
                 />
               </div>
               <span className="font-serif text-amber-300 text-[9px] font-bold text-center leading-tight mt-1.5 drop-shadow-[0_0_8px_rgba(212,175,55,0.6)]">
-                || શ્રી ગણેશાય નમઃ ||
+                {t("welcome.ganeshMantra")}
               </span>
             </motion.div>
 
@@ -452,7 +452,7 @@ export default function SruManHub() {
               className="flex flex-col items-center w-[31%]"
             >
               <span className="font-serif text-amber-300 text-[9px] font-bold text-center leading-tight min-h-[26px] flex items-center justify-center drop-shadow-[0_0_8px_rgba(212,175,55,0.6)]">
-                || શ્રી કુળદેવીમાં સત્ય છે. ||
+                {t("welcome.kuldeviMantra")}
               </span>
               <div className="relative w-16 h-16 xs:w-20 xs:h-20 sm:w-24 sm:h-24 mt-1.5">
                 <Image
@@ -496,7 +496,7 @@ export default function SruManHub() {
               whileTap={{ scale: 0.94 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
               className="relative w-36 h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 flex items-center justify-center rounded-full cursor-pointer group select-none"
-              title="Click for Royal Blessings"
+              title={t("hub.tapCrestTitle")}
             >
               {/* Outer rotating celestial ring with cardinal diamond nodes */}
               <motion.div
@@ -560,7 +560,7 @@ export default function SruManHub() {
             className="mt-3.5 inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[11px] font-serif tracking-widest uppercase bg-gradient-to-r from-amber-500/15 via-purple-500/20 to-amber-500/15 hover:from-amber-500/25 hover:via-purple-500/30 hover:to-amber-500/25 text-amber-200 border border-amber-400/35 backdrop-blur-sm shadow-[0_0_15px_rgba(212,175,55,0.2)] transition-all duration-300 cursor-pointer"
           >
             <Sparkles className="w-3 h-3 text-amber-300 animate-pulse" />
-            <span>Tap Crest For Royal Blessings</span>
+            <span>{t("hub.tapCrestBadge")}</span>
             <Sparkles className="w-3 h-3 text-amber-300 animate-pulse" />
           </motion.button>
         </div>
@@ -577,7 +577,7 @@ export default function SruManHub() {
             <div className="h-[1px] w-4 xs:w-8 sm:w-16 bg-gradient-to-r from-transparent via-amber-400/60 to-amber-300 flex-shrink" />
             <span className="text-amber-400/80 text-[9px] xs:text-[10px] sm:text-xs flex-shrink-0">✦</span>
             <span className="font-serif text-[10px] xs:text-[11px] sm:text-xs md:text-sm tracking-[0.16em] xs:tracking-[0.22em] sm:tracking-[0.3em] text-amber-200/90 uppercase font-semibold whitespace-nowrap">
-              Welcome To The Celebrations of
+              {t("hub.welcomePrefix")}
             </span>
             <span className="text-amber-400/80 text-[9px] xs:text-[10px] sm:text-xs flex-shrink-0">✦</span>
             <div className="h-[1px] w-4 xs:w-8 sm:w-16 bg-gradient-to-l from-transparent via-amber-400/60 to-amber-300 flex-shrink" />
@@ -585,27 +585,31 @@ export default function SruManHub() {
 
           {/* Grand Shimmering Nameplate */}
           <h1 className="font-serif text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-wide mt-1.5 sm:mt-2 text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-[#fae4a8] to-amber-200 drop-shadow-[0_2px_18px_rgba(212,175,55,0.45)] whitespace-nowrap transition-all duration-500 hover:scale-[1.01]">
-            <span className="inline-block hover:text-amber-100 transition-colors">Srushti</span>{" "}
+            <span className="inline-block hover:text-amber-100 transition-colors">{t("hub.brideFirstName")}</span>{" "}
             <span className="font-alex-brush text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-rose-300 to-amber-400 font-normal px-1 xs:px-1.5 drop-shadow-[0_0_15px_rgba(244,114,182,0.4)] align-middle">
               &
             </span>{" "}
-            <span className="inline-block hover:text-amber-100 transition-colors">Aman</span>
+            <span className="inline-block hover:text-amber-100 transition-colors">{t("hub.groomFirstName")}</span>
           </h1>
 
           {/* Romantic Quote with Twin Pulsing Hearts */}
           <div className="inline-flex items-center justify-center gap-2 sm:gap-2.5 mt-2.5 sm:mt-3.5 px-3.5 xs:px-4 sm:px-6 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-amber-500/10 via-purple-900/25 to-amber-500/10 border border-amber-400/30 backdrop-blur-md shadow-[0_4px_16px_rgba(0,0,0,0.3)] group hover:border-amber-400/50 transition-all duration-300">
             <Heart className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300/80 fill-amber-300/40 group-hover:scale-125 transition-transform duration-300 animate-pulse flex-shrink-0" />
             <p className="font-alex-brush text-sm xs:text-base sm:text-xl md:text-2xl text-amber-200/95 font-normal tracking-wide drop-shadow-[0_0_10px_rgba(212,175,55,0.35)] leading-tight">
-              &ldquo;Two hearts, two souls, one eternal journey of love&rdquo;
+              {t("hub.quote")}
             </p>
             <Heart className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-300/80 fill-amber-300/40 group-hover:scale-125 transition-transform duration-300 animate-pulse flex-shrink-0" />
           </div>
 
           {/* Subtitle Description */}
           <p className="font-sans text-xs sm:text-sm text-stone-300/85 max-w-lg mx-auto mt-3.5 tracking-wider leading-relaxed">
-            Discover our <span className="text-amber-200 font-medium">auspicious celebrations</span>, relive the{" "}
-            <span className="text-amber-200 font-medium">joyous engagement memories</span>, and stay tuned for the{" "}
-            <span className="text-amber-200 font-medium">royal wedding</span>.
+            {t("hub.subtitlePart1")}
+            <span className="text-amber-200 font-medium">{t("hub.subtitleHighlight1")}</span>
+            {t("hub.subtitlePart2")}
+            <span className="text-amber-200 font-medium">{t("hub.subtitleHighlight2")}</span>
+            {t("hub.subtitlePart3")}
+            <span className="text-amber-200 font-medium">{t("hub.subtitleHighlight3")}</span>
+            {t("hub.subtitlePart4")}
           </p>
 
           {/* Interactive Royal Blessings Shower Counter Pill */}
@@ -618,7 +622,7 @@ export default function SruManHub() {
             >
               <Heart className="w-4 h-4 text-rose-400 fill-rose-500 group-hover:scale-125 transition-transform duration-300 animate-pulse" />
               <span className="font-serif text-xs sm:text-sm font-semibold text-amber-200 tracking-wider">
-                Shower Royal Blessings (પુષ્પવૃષ્ટિ)
+                {t("hub.showerRoyalBlessings")}
               </span>
               <Heart className="w-4 h-4 text-rose-400 fill-rose-500 group-hover:scale-125 transition-transform duration-300 animate-pulse" />
             </motion.button>
@@ -646,25 +650,25 @@ export default function SruManHub() {
               <div className="flex items-center justify-between gap-4 mb-4">
                 <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-serif tracking-widest uppercase bg-amber-500/15 text-amber-300 border border-amber-400/35 font-bold">
                   <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
-                  Primary Celebration
+                  {t("hub.weddingCard.primaryBadge")}
                 </span>
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-serif tracking-widest uppercase bg-purple-500/20 text-purple-200 border border-purple-400/30">
                   <Lock className="w-3 h-3 text-purple-300" />
-                  Coming Soon
+                  {t("hub.weddingCard.comingSoonBadge")}
                 </span>
               </div>
 
               {/* Title & Description */}
               <h2 className="font-serif text-3xl sm:text-5xl font-bold text-amber-100 drop-shadow-sm">
-                The Royal Wedding
+                {t("hub.weddingCard.title")}
               </h2>
 
               <p className="font-alex-brush text-xl sm:text-3xl text-amber-300/80 mt-1">
-                A grand celebration of sacred vows & forever love
+                {t("hub.weddingCard.tagline")}
               </p>
 
               <p className="font-sans text-xs sm:text-sm text-stone-300/85 mt-3 leading-relaxed">
-                The sacred journey toward our grand wedding celebration is underway. Multi-day festivities including Mandap Muhurat, Haldi, Mehendi, Sangeet, Baarat, Pheras, and Reception are in preparation.
+                {t("hub.weddingCard.desc")}
               </p>
 
               {/* Prominent "Launching Soon" Royal Showcase Box (No URL, No Counter) */}
@@ -675,14 +679,14 @@ export default function SruManHub() {
                 <div className="flex-1">
                   <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
                     <h3 className="font-serif text-base sm:text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-300 to-amber-100">
-                      Launching Wedding Portal Soon
+                      {t("hub.weddingCard.launchingTitle")}
                     </h3>
                     <span className="px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 text-[10px] font-sans tracking-wider uppercase font-semibold border border-amber-400/30">
-                      Stay Tuned
+                      {t("hub.weddingCard.stayTunedBadge")}
                     </span>
                   </div>
                   <p className="font-sans text-xs text-stone-300/80 mt-1.5 leading-relaxed">
-                    The grand digital wedding experience featuring ceremony itineraries, auspicious muhurats, venue navigation, and live updates will be unveiled soon.
+                    {t("hub.weddingCard.launchingDesc")}
                   </p>
                 </div>
               </div>
@@ -698,7 +702,7 @@ export default function SruManHub() {
               whileHover={{ scale: 1.2, rotate: 15 }}
               onClick={triggerConfetti}
               className="w-9 h-9 rounded-full border border-amber-400/50 bg-stone-950/90 flex items-center justify-center text-amber-300 text-sm shadow-[0_0_15px_rgba(212,175,55,0.3)] cursor-pointer"
-              title="Click for celebration sparkles!"
+              title={t("hub.timelineTitle")}
             >
               💍
             </motion.div>
@@ -729,21 +733,21 @@ export default function SruManHub() {
               <div className="flex items-center justify-between gap-4 mb-4">
                 <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-serif tracking-widest uppercase bg-rose-500/20 text-rose-300 border border-rose-400/40 shadow-sm font-semibold">
                   <Heart className="w-3.5 h-3.5 text-rose-300 fill-rose-300 animate-pulse" />
-                  Where Forever Began
+                  {t("hub.engagementCard.foreverBadge")}
                 </span>
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-serif tracking-wider uppercase bg-amber-500/20 text-amber-300 border border-amber-400/40 font-bold">
                   <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                  Relive The Memories
+                  {t("hub.engagementCard.reliveBadge")}
                 </span>
               </div>
 
               {/* Title & Romantic Tagline */}
               <h2 className="font-serif text-3xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-[#f7e4a9] to-amber-300 drop-shadow-sm">
-                The Engagement Ceremony
+                {t("hub.engagementCard.title")}
               </h2>
 
               <p className="font-alex-brush text-2xl sm:text-3xl text-amber-300/90 mt-1">
-                The grand ring ceremony, palace gates & sacred promises
+                {t("hub.engagementCard.tagline")}
               </p>
 
               {/* Ceremony Fast Facts Bar */}
@@ -751,19 +755,19 @@ export default function SruManHub() {
                 <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-black/40 border border-amber-400/20 text-stone-300">
                   <Calendar className="w-4 h-4 text-amber-300 flex-shrink-0" />
                   <span>
-                    <strong className="text-amber-200">Date:</strong> 18 Aug 2026 (શ્રાવણ સુદ-૬)
+                    <strong className="text-amber-200">{t("hub.engagementCard.dateLabel")}</strong> {t("hub.engagementCard.dateValue")}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-black/40 border border-amber-400/20 text-stone-300">
                   <Clock className="w-4 h-4 text-amber-300 flex-shrink-0" />
                   <span>
-                    <strong className="text-amber-200">Muhurat:</strong> {muhuratDisplay}
+                    <strong className="text-amber-200">{t("hub.engagementCard.muhuratLabel")}</strong> {formatNumber(muhuratDisplay)}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-black/40 border border-amber-400/20 text-stone-300">
                   <MapPin className="w-4 h-4 text-amber-300 flex-shrink-0" />
                   <span className="truncate">
-                    <strong className="text-amber-200">Venue:</strong> Parishram The Lawns, Gondal
+                    <strong className="text-amber-200">{t("hub.engagementCard.venueLabel")}</strong> {t("hub.engagementCard.venueValue")}
                   </span>
                 </div>
               </div>
@@ -777,10 +781,10 @@ export default function SruManHub() {
                     <span className="text-amber-300 text-xs">✨</span>
                     <h3 className="font-serif text-sm sm:text-lg font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-[#f7e4a9] to-amber-300 uppercase">
                       {engagementTime.isOngoing
-                        ? "The Auspicious Ceremony is Ongoing"
+                        ? t("hub.engagementCard.countdownOngoing")
                         : engagementTime.isPast
-                        ? "Cherished Moments Since The Auspicious Ceremony"
-                        : "Countdown To The Auspicious Ring Ceremony"}
+                        ? t("hub.engagementCard.countdownPast")
+                        : t("hub.engagementCard.countdownUpcoming")}
                     </h3>
                     <span className="text-amber-300 text-xs">✨</span>
                   </div>
@@ -794,11 +798,11 @@ export default function SruManHub() {
                 {/* 5-Segment Authentic Counter Grid (Months, Days, Hours, Mins, Secs) */}
                 <div className="grid grid-cols-5 gap-2 sm:gap-3.5 max-w-xl mx-auto">
                   {[
-                    { label: "MONTHS", val: engagementTime.months },
-                    { label: "DAYS", val: engagementTime.days },
-                    { label: "HOURS", val: engagementTime.hours },
-                    { label: "MINS", val: engagementTime.minutes },
-                    { label: "SECS", val: engagementTime.seconds },
+                    { label: t("hub.engagementCard.months"), val: engagementTime.months },
+                    { label: t("hub.engagementCard.days"), val: engagementTime.days },
+                    { label: t("hub.engagementCard.hours"), val: engagementTime.hours },
+                    { label: t("hub.engagementCard.mins"), val: engagementTime.minutes },
+                    { label: t("hub.engagementCard.secs"), val: engagementTime.seconds },
                   ].map((item, idx) => (
                     <motion.div
                       key={idx}
@@ -806,7 +810,7 @@ export default function SruManHub() {
                       className="flex flex-col items-center justify-center p-2 sm:p-3 rounded-2xl bg-gradient-to-b from-white/[0.08] to-black/60 border border-amber-400/35 backdrop-blur-md shadow-[0_4px_15px_rgba(0,0,0,0.3)] transition-all duration-300 group"
                     >
                       <span className="font-serif text-lg sm:text-3xl lg:text-4xl font-extrabold text-amber-200 group-hover:text-amber-100 drop-shadow-[0_0_10px_rgba(212,175,55,0.5)]">
-                        {mounted ? String(item.val).padStart(2, "0") : "00"}
+                        {formatNumber(mounted ? String(item.val).padStart(2, "0") : "00")}
                       </span>
                       <span className="font-sans text-[8px] sm:text-[10px] tracking-widest text-amber-300/80 mt-1 uppercase font-semibold">
                         {item.label}
@@ -821,7 +825,7 @@ export default function SruManHub() {
               {/* ========================================================== */}
               <div className="mb-6">
                 <span className="font-serif text-[11px] sm:text-xs tracking-[0.2em] text-amber-300/90 uppercase font-bold block mb-3 text-center sm:text-left">
-                  ✦ Explore Portal Highlights Inside:
+                  {t("hub.engagementCard.exploreHighlights")}
                 </span>
 
                 {/* Feature Selector Pills */}
@@ -899,7 +903,7 @@ export default function SruManHub() {
                   onClick={triggerConfetti}
                   className="flex-1 inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-amber-500 via-[#f7e4a9] to-amber-500 text-stone-950 font-serif text-sm sm:text-base font-bold tracking-wider shadow-[0_0_25px_rgba(212,175,55,0.45)] hover:shadow-[0_0_40px_rgba(212,175,55,0.7)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer text-center"
                 >
-                  <span>Enter Engagement Portal & Relive Memories</span>
+                  <span>{t("hub.engagementCard.enterPortalBtn")}</span>
                   <ArrowRight className="w-5 h-5 text-stone-950 group-hover:translate-x-1.5 transition-transform" />
                 </Link>
 
@@ -907,10 +911,10 @@ export default function SruManHub() {
                   type="button"
                   onClick={triggerConfetti}
                   className="inline-flex items-center justify-center gap-2 px-5 py-4 rounded-full bg-black/50 hover:bg-black/70 text-amber-300 border border-amber-400/40 hover:border-amber-400 font-sans text-xs tracking-wider uppercase font-semibold transition-all duration-300 cursor-pointer shadow-sm"
-                  title="Celebrate with festive sparkles"
+                  title={t("hub.engagementCard.showerBlessingsTitle")}
                 >
                   <PartyPopper className="w-4 h-4 text-amber-300" />
-                  <span>Shower Blessings</span>
+                  <span>{t("hub.engagementCard.showerBlessingsBtn")}</span>
                 </button>
               </div>
             </div>
@@ -941,7 +945,7 @@ export default function SruManHub() {
             {/* Crown Ribbon Header */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-serif tracking-[0.25em] uppercase font-bold mb-6 shadow-sm">
               <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
-              Crafted With Passion & Innovation By
+              {t("hub.dotr.craftedBadge")}
               <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
             </div>
 
@@ -966,14 +970,14 @@ export default function SruManHub() {
               <div>
                 <div className="flex items-center justify-center gap-2 mt-1 flex-wrap">
                   <h3 className="font-serif text-lg sm:text-2xl font-bold tracking-wider text-amber-100 group-hover:text-amber-300 transition-colors">
-                    DHINOJA OmniTech Resolutions
+                    {t("hub.dotr.companyName")}
                   </h3>
                   <span className="px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 text-xs font-bold font-sans tracking-widest border border-amber-400/40">
                     DOTR
                   </span>
                 </div>
                 <p className="font-sans text-xs sm:text-sm text-amber-200/80 mt-1 tracking-wide">
-                  Architecting High-Performance Digital Experiences & Royal Wedding Suites
+                  {t("hub.dotr.tagline")}
                 </p>
               </div>
             </motion.a>
@@ -983,28 +987,28 @@ export default function SruManHub() {
               <div className="flex flex-col items-center p-3.5 rounded-2xl bg-black/40 border border-amber-400/20 hover:border-amber-400/40 transition-colors">
                 <Code2 className="w-5 h-5 text-amber-300 mb-1.5" />
                 <span className="font-serif text-xs font-bold text-amber-200">
-                  Custom Web Platforms
+                  {t("hub.dotr.pillar1Title")}
                 </span>
                 <span className="font-sans text-[11px] text-stone-400 mt-1">
-                  Next.js, React & modern web engineering
+                  {t("hub.dotr.pillar1Desc")}
                 </span>
               </div>
               <div className="flex flex-col items-center p-3.5 rounded-2xl bg-black/40 border border-amber-400/20 hover:border-amber-400/40 transition-colors">
                 <Layers className="w-5 h-5 text-amber-300 mb-1.5" />
                 <span className="font-serif text-xs font-bold text-amber-200">
-                  Luxury Motion & 3D
+                  {t("hub.dotr.pillar2Title")}
                 </span>
                 <span className="font-sans text-[11px] text-stone-400 mt-1">
-                  60fps animations, Web Audio & interactive UI
+                  {t("hub.dotr.pillar2Desc")}
                 </span>
               </div>
               <div className="flex flex-col items-center p-3.5 rounded-2xl bg-black/40 border border-amber-400/20 hover:border-amber-400/40 transition-colors">
                 <Award className="w-5 h-5 text-amber-300 mb-1.5" />
                 <span className="font-serif text-xs font-bold text-amber-200">
-                  Enterprise Solutions
+                  {t("hub.dotr.pillar3Title")}
                 </span>
                 <span className="font-sans text-[11px] text-stone-400 mt-1">
-                  Cloud architecture & scalable digital systems
+                  {t("hub.dotr.pillar3Desc")}
                 </span>
               </div>
             </div>
@@ -1019,7 +1023,7 @@ export default function SruManHub() {
                 className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-amber-400/30 bg-black/50 hover:bg-amber-400 hover:text-stone-950 text-amber-200 transition-all duration-300 shadow-sm font-semibold group"
               >
                 <Globe className="w-4 h-4 text-amber-300 group-hover:text-stone-950 transition-colors" />
-                <span>Visit dotr.in</span>
+                <span>{t("hub.dotr.visitWebsite")}</span>
                 <ExternalLink className="w-3.5 h-3.5 opacity-70 group-hover:opacity-100" />
               </a>
 
@@ -1029,7 +1033,7 @@ export default function SruManHub() {
                 className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-amber-400/30 bg-black/50 hover:bg-amber-400 hover:text-stone-950 text-amber-200 transition-all duration-300 shadow-sm font-semibold group"
               >
                 <Phone className="w-4 h-4 text-amber-300 group-hover:text-stone-950 transition-colors" />
-                <span>+91 8200965524</span>
+                <span>{formatNumber("+91 8200965524")}</span>
               </a>
 
               {/* Direct Email */}
@@ -1046,17 +1050,17 @@ export default function SruManHub() {
                 type="button"
                 onClick={handleCopyContact}
                 className="flex items-center gap-2 px-4 py-2.5 rounded-full border border-amber-400/20 bg-white/5 hover:bg-white/10 text-stone-300 hover:text-amber-200 transition-all duration-300 cursor-pointer"
-                title="Copy all contact details"
+                title={t("hub.dotr.copyTitle")}
               >
                 {copiedContact ? (
                   <>
                     <Check className="w-4 h-4 text-emerald-400" />
-                    <span className="text-emerald-400 font-semibold">Copied!</span>
+                    <span className="text-emerald-400 font-semibold">{t("hub.dotr.copied")}</span>
                   </>
                 ) : (
                   <>
                     <Copy className="w-3.5 h-3.5" />
-                    <span>Copy Info</span>
+                    <span>{t("hub.dotr.copyInfo")}</span>
                   </>
                 )}
               </button>
@@ -1064,8 +1068,8 @@ export default function SruManHub() {
 
             {/* Footer Bottom Line */}
             <div className="mt-8 pt-5 border-t border-amber-400/15 w-full flex flex-col sm:flex-row items-center justify-between text-[11px] font-sans text-stone-400/80 gap-2">
-              <span>Designed & Developed with ♥ for Srushti & Aman</span>
-              <span>© 2026 DHINOJA OmniTech Resolutions (DOTR) • All Rights Reserved</span>
+              <span>{t("hub.dotr.designedWithLove")}</span>
+              <span>{t("hub.dotr.copyright")}</span>
             </div>
           </div>
         </motion.div>

@@ -179,8 +179,8 @@ export default function PalaceGateEntry({ onEnter }: PalaceGateEntryProps) {
             {!assetsLoaded && (
               <Preloader
                 key="palace-gate-preloader"
-                text="Loading Palace Gates..."
-                subtitle="Auspicious Royal Celebration"
+                textKey="preloader.gateText"
+                subtitleKey="preloader.gateSubtitle"
                 fullScreen={false}
                 zIndex={60}
               />

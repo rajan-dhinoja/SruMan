@@ -81,6 +81,7 @@ export const metadata: Metadata = {
 };
 
 import { LanguageProvider } from "@/context/LanguageContext";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export default function RootLayout({
   children,
@@ -91,6 +92,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className={`${cormorant.variable} ${montserrat.variable} ${alexBrush.variable} scroll-smooth`}>
       <body suppressHydrationWarning className="bg-[#fbf9fb] text-[#2d142c] antialiased min-h-screen">
         <LanguageProvider>
+          <LanguageSwitcher />
           {children}
         </LanguageProvider>
       </body>

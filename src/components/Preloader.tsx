@@ -2,12 +2,17 @@
 
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLanguage } from "@/context/LanguageContext";
 
 export interface PreloaderProps {
-  /** Text shown below the monogram, defaults to "Loading Celebrations..." */
+  /** Text shown below the monogram */
   text?: string;
+  /** Translation key for the loading text (takes precedence over text) */
+  textKey?: string;
   /** Optional secondary subtitle or mantra */
   subtitle?: string;
+  /** Translation key for the subtitle (takes precedence over subtitle) */
+  subtitleKey?: string;
   /** Whether the preloader covers the viewport (fixed) or fills container (absolute) */
   fullScreen?: boolean;
   /** Callback fired when minimum display duration finishes */
@@ -19,14 +24,24 @@ export interface PreloaderProps {
 }
 
 export default function Preloader({
-  text = "Loading Celebrations...",
+  text,
+  textKey,
   subtitle,
+  subtitleKey,
   fullScreen = true,
   onComplete,
   minDuration = 800,
   zIndex = 60,
 }: PreloaderProps) {
+  const { t } = useLanguage();
   const [canComplete, setCanComplete] = useState(false);
+
+  const resolvedText = textKey ? t(textKey) : text || t("preloader.defaultText");
+  const resolvedSubtitle = subtitleKey
+    ? t(subtitleKey)
+    : subtitle !== undefined
+    ? subtitle
+    : t("preloader.defaultSubtitle");
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -125,13 +140,13 @@ export default function Preloader({
           transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
           className="font-serif text-xs sm:text-sm tracking-[0.28em] uppercase text-amber-300/90 text-center font-medium"
         >
-          {text}
+          {resolvedText}
         </motion.div>
 
         {/* Optional Subtitle / Mantra */}
-        {subtitle && (
+        {resolvedSubtitle && (
           <div className="font-sans text-[10px] sm:text-[11px] tracking-[0.2em] text-amber-200/60 uppercase mt-1.5 font-light">
-            {subtitle}
+            {resolvedSubtitle}
           </div>
         )}
       </div>
