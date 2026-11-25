@@ -28,7 +28,6 @@ import {
   PartyPopper,
 } from "lucide-react";
 import SparklesCanvas from "@/components/SparklesCanvas";
-import Preloader from "@/components/Preloader";
 import confetti from "canvas-confetti";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -63,7 +62,6 @@ const parseCeremonyTime = (timeStr: string | undefined, defaultIso: string): Dat
 export default function SruManHub() {
   const { language, t, formatNumber } = useLanguage();
   const [mounted, setMounted] = useState(false);
-  const [pageLoading, setPageLoading] = useState(true);
   const [copiedContact, setCopiedContact] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
 
@@ -216,12 +214,8 @@ export default function SruManHub() {
 
     calculateEngagementTime();
     const interval = setInterval(calculateEngagementTime, 1000);
-    const loadTimer = setTimeout(() => {
-      setPageLoading(false);
-    }, 750);
     return () => {
       clearInterval(interval);
-      clearTimeout(loadTimer);
     };
   }, [targetEngagementDate, completionEngagementDate]);
 
@@ -240,12 +234,27 @@ export default function SruManHub() {
     }
   };
 
-  const handleCopyContact = () => {
+  const handleCopyContact = async () => {
     const contactText =
       "DHINOJA OmniTech Resolutions (DOTR)\nWebsite: https://dotr.in\nPhone: +91 8200965524\nEmail: hello@dotr.in";
-    navigator.clipboard.writeText(contactText);
-    setCopiedContact(true);
-    setTimeout(() => setCopiedContact(false), 2500);
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(contactText);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = contactText;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+      setCopiedContact(true);
+      setTimeout(() => setCopiedContact(false), 2500);
+    } catch {
+      // Clipboard unavailable in restricted browser context
+    }
   };
 
   const engagementFeatures = [
@@ -285,17 +294,6 @@ export default function SruManHub() {
 
   return (
     <>
-      <AnimatePresence>
-        {pageLoading && (
-          <Preloader
-            key="hub-preloader"
-            textKey="preloader.hubText"
-            subtitleKey="preloader.hubSubtitle"
-            onComplete={() => setPageLoading(false)}
-          />
-        )}
-      </AnimatePresence>
-
       <div className="relative min-h-screen bg-gradient-to-b from-[#14031c] via-[#21072b] to-[#0a000f] text-[#fbf9fb] overflow-x-hidden select-none">
       {/* 60fps Ambient Gold Sparkles */}
       <SparklesCanvas />
@@ -309,7 +307,7 @@ export default function SruManHub() {
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-gradient-to-tr from-amber-500/10 via-purple-600/10 to-transparent rounded-full filter blur-[140px]" />
       </div>
 
-      <div className="relative z-10 max-w-5xl mx-auto px-4 py-16 sm:py-20 flex flex-col items-center">
+      <div className="relative z-10 max-w-5xl mx-auto px-3 sm:px-4 pt-12 pb-28 sm:pt-16 sm:pb-28 md:py-20 flex flex-col items-center">
         {/* ============================================================ */}
         {/* DIVINE INVOCATION & DEITIES (AS IN ENGAGEMENT PORTAL)       */}
         {/* ============================================================ */}
@@ -573,22 +571,22 @@ export default function SruManHub() {
           className="text-center mt-5 sm:mt-6 w-full max-w-3xl px-3"
         >
           {/* Welcome with Ornate Royal Filigree Divider */}
-          <div className="flex items-center justify-center gap-1.5 xs:gap-2 sm:gap-3 mb-2 max-w-full">
-            <div className="h-[1px] w-4 xs:w-8 sm:w-16 bg-gradient-to-r from-transparent via-amber-400/60 to-amber-300 flex-shrink" />
-            <span className="text-amber-400/80 text-[9px] xs:text-[10px] sm:text-xs flex-shrink-0">✦</span>
-            <span className="font-serif text-[10px] xs:text-[11px] sm:text-xs md:text-sm tracking-[0.16em] xs:tracking-[0.22em] sm:tracking-[0.3em] text-amber-200/90 uppercase font-semibold whitespace-nowrap">
+          <div className="flex items-center justify-center gap-1.5 sm:gap-3 mb-2 max-w-full px-1">
+            <div className="h-[1px] w-4 sm:w-16 bg-gradient-to-r from-transparent via-amber-400/60 to-amber-300 flex-shrink" />
+            <span className="text-amber-400/80 text-[9px] sm:text-xs flex-shrink-0">✦</span>
+            <span className="font-serif text-[10px] sm:text-xs md:text-sm tracking-[0.12em] sm:tracking-[0.3em] text-amber-200/90 uppercase font-semibold text-center">
               {t("hub.welcomePrefix")}
             </span>
-            <span className="text-amber-400/80 text-[9px] xs:text-[10px] sm:text-xs flex-shrink-0">✦</span>
-            <div className="h-[1px] w-4 xs:w-8 sm:w-16 bg-gradient-to-l from-transparent via-amber-400/60 to-amber-300 flex-shrink" />
+            <span className="text-amber-400/80 text-[9px] sm:text-xs flex-shrink-0">✦</span>
+            <div className="h-[1px] w-4 sm:w-16 bg-gradient-to-l from-transparent via-amber-400/60 to-amber-300 flex-shrink" />
           </div>
 
           {/* Grand Shimmering Nameplate */}
-          <h1 className="font-serif text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-wide mt-1.5 sm:mt-2 text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-[#fae4a8] to-amber-200 drop-shadow-[0_2px_18px_rgba(212,175,55,0.45)] whitespace-nowrap transition-all duration-500 hover:scale-[1.01]">
-            <span className="inline-block hover:text-amber-100 transition-colors">{t("hub.brideFirstName")}</span>{" "}
-            <span className="font-alex-brush text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-rose-300 to-amber-400 font-normal px-1 xs:px-1.5 drop-shadow-[0_0_15px_rgba(244,114,182,0.4)] align-middle">
+          <h1 className="font-serif text-[clamp(1.6rem,7vw,3.75rem)] font-bold tracking-wide mt-1.5 sm:mt-2 text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-[#fae4a8] to-amber-200 drop-shadow-[0_2px_18px_rgba(212,175,55,0.45)] flex flex-wrap items-baseline justify-center gap-x-2 transition-all duration-500 hover:scale-[1.01]">
+            <span className="inline-block hover:text-amber-100 transition-colors">{t("hub.brideFirstName")}</span>
+            <span className="font-alex-brush text-[clamp(2rem,8.5vw,4.5rem)] text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-rose-300 to-amber-400 font-normal px-0.5 sm:px-1.5 drop-shadow-[0_0_15px_rgba(244,114,182,0.4)] leading-none">
               &
-            </span>{" "}
+            </span>
             <span className="inline-block hover:text-amber-100 transition-colors">{t("hub.groomFirstName")}</span>
           </h1>
 
@@ -647,7 +645,7 @@ export default function SruManHub() {
 
             <div className="relative z-10 flex flex-col">
               {/* Badge Row */}
-              <div className="flex items-center justify-between gap-4 mb-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-4 mb-4">
                 <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-serif tracking-widest uppercase bg-amber-500/15 text-amber-300 border border-amber-400/35 font-bold">
                   <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
                   {t("hub.weddingCard.primaryBadge")}
@@ -730,7 +728,7 @@ export default function SruManHub() {
 
             <div className="relative z-10 flex flex-col">
               {/* Badge & Status */}
-              <div className="flex items-center justify-between gap-4 mb-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-4 mb-4">
                 <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-serif tracking-widest uppercase bg-rose-500/20 text-rose-300 border border-rose-400/40 shadow-sm font-semibold">
                   <Heart className="w-3.5 h-3.5 text-rose-300 fill-rose-300 animate-pulse" />
                   {t("hub.engagementCard.foreverBadge")}
@@ -775,7 +773,7 @@ export default function SruManHub() {
               {/* ========================================================== */}
               {/* ENGAGEMENT COUNTER (MATCHING ENGAGEMENT PORTAL EXACTLY)   */}
               {/* ========================================================== */}
-              <div className="my-7 rounded-2xl bg-black/50 border border-amber-400/35 p-5 sm:p-6 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.4)]">
+              <div className="my-6 sm:my-7 rounded-2xl bg-black/50 border border-amber-400/35 p-3.5 sm:p-6 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.4)]">
                 <div className="text-center mb-4">
                   <div className="flex items-center justify-center gap-2 mb-1">
                     <span className="text-amber-300 text-xs">✨</span>
@@ -796,7 +794,7 @@ export default function SruManHub() {
                 </div>
 
                 {/* 5-Segment Authentic Counter Grid (Months, Days, Hours, Mins, Secs) */}
-                <div className="grid grid-cols-5 gap-2 sm:gap-3.5 max-w-xl mx-auto">
+                <div className="grid grid-cols-5 gap-1.5 sm:gap-3.5 max-w-xl mx-auto">
                   {[
                     { label: t("hub.engagementCard.months"), val: engagementTime.months },
                     { label: t("hub.engagementCard.days"), val: engagementTime.days },
@@ -807,12 +805,12 @@ export default function SruManHub() {
                     <motion.div
                       key={idx}
                       whileHover={{ scale: 1.05, y: -2 }}
-                      className="flex flex-col items-center justify-center p-2 sm:p-3 rounded-2xl bg-gradient-to-b from-white/[0.08] to-black/60 border border-amber-400/35 backdrop-blur-md shadow-[0_4px_15px_rgba(0,0,0,0.3)] transition-all duration-300 group"
+                      className="flex flex-col items-center justify-center p-1.5 sm:p-3 rounded-xl sm:rounded-2xl bg-gradient-to-b from-white/[0.08] to-black/60 border border-amber-400/35 backdrop-blur-md shadow-[0_4px_15px_rgba(0,0,0,0.3)] transition-all duration-300 group min-w-0"
                     >
-                      <span className="font-serif text-lg sm:text-3xl lg:text-4xl font-extrabold text-amber-200 group-hover:text-amber-100 drop-shadow-[0_0_10px_rgba(212,175,55,0.5)]">
+                      <span className="font-serif text-base sm:text-3xl lg:text-4xl font-extrabold text-amber-200 group-hover:text-amber-100 drop-shadow-[0_0_10px_rgba(212,175,55,0.5)]">
                         {formatNumber(mounted ? String(item.val).padStart(2, "0") : "00")}
                       </span>
-                      <span className="font-sans text-[8px] sm:text-[10px] tracking-widest text-amber-300/80 mt-1 uppercase font-semibold">
+                      <span className="font-sans text-[7px] sm:text-[10px] tracking-normal sm:tracking-widest text-amber-300/80 mt-0.5 sm:mt-1 uppercase font-semibold truncate max-w-full">
                         {item.label}
                       </span>
                     </motion.div>
@@ -959,7 +957,7 @@ export default function SruManHub() {
               className="group flex flex-col items-center gap-3 cursor-pointer mb-6"
             >
               {/* White High-End Brand Box with Trimmed Logo & Perfect Fit */}
-              <div className="w-60 sm:w-72 md:w-80 h-20 sm:h-22 md:h-24 rounded-2xl bg-white px-4 py-2 border-2 border-amber-400/70 flex items-center justify-center group-hover:border-amber-400 group-hover:shadow-[0_0_25px_rgba(212,175,55,0.45)] transition-all duration-300 shadow-[0_0_15px_rgba(212,175,55,0.25)] overflow-hidden">
+              <div className="w-full max-w-[240px] sm:max-w-[288px] md:max-w-[320px] h-20 sm:h-22 md:h-24 rounded-2xl bg-white px-4 py-2 border-2 border-amber-400/70 flex items-center justify-center group-hover:border-amber-400 group-hover:shadow-[0_0_25px_rgba(212,175,55,0.45)] transition-all duration-300 shadow-[0_0_15px_rgba(212,175,55,0.25)] overflow-hidden">
                 <img
                   src="/logos/DOTR_Full_Color_Logo_Trimmed.png"
                   alt="DHINOJA OmniTech Resolutions (DOTR) Logo"

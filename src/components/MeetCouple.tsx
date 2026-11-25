@@ -12,22 +12,34 @@ export default function MeetCouple() {
   const [hasLikedGroom, setHasLikedGroom] = useState(false);
 
   useEffect(() => {
-    const bHasLiked = localStorage.getItem("sruman_has_liked_bride");
-    const gHasLiked = localStorage.getItem("sruman_has_liked_groom");
-    if (bHasLiked === "true") setHasLikedBride(true);
-    if (gHasLiked === "true") setHasLikedGroom(true);
+    try {
+      const bHasLiked = localStorage.getItem("sruman_has_liked_bride");
+      const gHasLiked = localStorage.getItem("sruman_has_liked_groom");
+      if (bHasLiked === "true") setHasLikedBride(true);
+      if (gHasLiked === "true") setHasLikedGroom(true);
+    } catch {
+      // Ignore storage access errors in Safari private mode
+    }
   }, []);
 
   const handleLikeBride = () => {
     const nextState = !hasLikedBride;
     setHasLikedBride(nextState);
-    localStorage.setItem("sruman_has_liked_bride", String(nextState));
+    try {
+      localStorage.setItem("sruman_has_liked_bride", String(nextState));
+    } catch {
+      // Ignore storage errors
+    }
   };
 
   const handleLikeGroom = () => {
     const nextState = !hasLikedGroom;
     setHasLikedGroom(nextState);
-    localStorage.setItem("sruman_has_liked_groom", String(nextState));
+    try {
+      localStorage.setItem("sruman_has_liked_groom", String(nextState));
+    } catch {
+      // Ignore storage errors
+    }
   };
 
   return (
@@ -41,7 +53,7 @@ export default function MeetCouple() {
         <motion.div
           className="text-center mb-12"
         >
-          <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-[#8a1525] tracking-wide mb-0">
+          <h2 className="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-[#8a1525] tracking-wide mb-0">
             :: {t("couple.meetCoupleTitle")} ::
           </h2>
           
@@ -68,7 +80,7 @@ export default function MeetCouple() {
               <div className="relative z-10 flex flex-col items-center text-center bg-white rounded-[1.8rem] overflow-hidden border border-[#d4af37]/30 shadow-[0_8px_32px_rgba(94,31,112,0.10)]">
 
                 {/* Photo */}
-                <div className="relative w-full h-[26rem] sm:h-[28rem] overflow-hidden bg-gradient-to-b from-[#f9f4ff] to-[#f3eaf8]">
+                <div className="relative w-full h-[19rem] xs:h-[22rem] sm:h-[26rem] md:h-[28rem] overflow-hidden bg-gradient-to-b from-[#f9f4ff] to-[#f3eaf8]">
                   <Image
                     src="/images/srushti_natural.png"
                     alt="Srushti"
@@ -134,7 +146,7 @@ export default function MeetCouple() {
               <div className="relative z-10 flex flex-col items-center text-center bg-white rounded-[1.8rem] overflow-hidden border border-[#d4af37]/30 shadow-[0_8px_32px_rgba(94,31,112,0.10)]">
 
                 {/* Photo */}
-                <div className="relative w-full h-[26rem] sm:h-[28rem] overflow-hidden bg-gradient-to-b from-[#fef9ee] to-[#f8f0dc]">
+                <div className="relative w-full h-[19rem] xs:h-[22rem] sm:h-[26rem] md:h-[28rem] overflow-hidden bg-gradient-to-b from-[#fef9ee] to-[#f8f0dc]">
                   <Image
                     src="/images/aman-without-safa.png"
                     alt="Aman"

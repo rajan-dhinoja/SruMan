@@ -20,7 +20,20 @@ export default function EngagementPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [activeSection, setActiveSection] = useState(0);
 
+  const celebrationIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const celebrationRafRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (celebrationIntervalRef.current) clearInterval(celebrationIntervalRef.current);
+      if (celebrationRafRef.current) cancelAnimationFrame(celebrationRafRef.current);
+    };
+  }, []);
+
   const triggerCelebration = () => {
+    if (celebrationIntervalRef.current) clearInterval(celebrationIntervalRef.current);
+    if (celebrationRafRef.current) cancelAnimationFrame(celebrationRafRef.current);
+
     // 1. Crackers / Fireworks (multiple bursts from left and right top corners)
     const duration = 3.5 * 1000;
     const animationEnd = Date.now() + duration;
@@ -30,11 +43,15 @@ export default function EngagementPage() {
       return Math.random() * (max - min) + min;
     };
 
-    const interval = setInterval(function() {
+    celebrationIntervalRef.current = setInterval(function() {
       const timeLeft = animationEnd - Date.now();
 
       if (timeLeft <= 0) {
-        return clearInterval(interval);
+        if (celebrationIntervalRef.current) {
+          clearInterval(celebrationIntervalRef.current);
+          celebrationIntervalRef.current = null;
+        }
+        return;
       }
 
       const particleCount = 40 * (timeLeft / duration);
@@ -110,7 +127,9 @@ export default function EngagementPage() {
       });
 
       if (Date.now() < end) {
-        requestAnimationFrame(frame);
+        celebrationRafRef.current = requestAnimationFrame(frame);
+      } else {
+        celebrationRafRef.current = null;
       }
     }());
   };
@@ -283,7 +302,7 @@ export default function EngagementPage() {
 
   useEffect(() => {
     if (showGate) return;
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, [showGate]);
@@ -330,9 +349,9 @@ export default function EngagementPage() {
           ))}
         </main>
 
-      {/* Navigation Dot Indicators */}
+      {/* Navigation Dot Indicators (Hidden on small mobile to avoid overlapping cards) */}
       {!showGate && (
-        <div className="fixed right-4 md:right-8 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-40 bg-[#fbf9fb]/40 p-2 md:p-3 rounded-full backdrop-blur-md border border-purple-300/20 shadow-lg">
+        <div className="hidden sm:flex fixed right-3 md:right-8 top-1/2 -translate-y-1/2 flex-col gap-3 z-40 bg-[#fbf9fb]/40 p-2 md:p-3 rounded-full backdrop-blur-md border border-purple-300/20 shadow-lg">
           {sections.map((sec, idx) => (
             <button
               key={sec.id}
@@ -356,7 +375,7 @@ export default function EngagementPage() {
 function CreditsSection() {
   const { t, formatNumber } = useLanguage();
   return (
-    <div id="credits-section" className="w-full bg-gradient-to-b from-[#1a0525] via-[#110119] to-[#08000c] text-center flex flex-col items-center gap-12 px-6 py-10 md:py-16 pb-20 md:pb-28 relative overflow-hidden select-none">
+    <div id="credits-section" className="w-full bg-gradient-to-b from-[#1a0525] via-[#110119] to-[#08000c] text-center flex flex-col items-center gap-12 px-4 sm:px-6 py-10 md:py-16 pb-28 md:pb-28 relative overflow-hidden select-none">
       {/* Decorative Royal Corner Elements */}
       <div className="absolute inset-0 pointer-events-none opacity-25">
         <div className="absolute top-0 left-0 w-36 h-36 md:w-48 md:h-48 border-l border-t border-gold-400/25 rounded-tl-[100px] m-4 md:m-6" />
@@ -431,7 +450,7 @@ function CreditsSection() {
         </span>
 
         <a 
-          href="http://dotr.in" 
+          href="https://dotr.in" 
           target="_blank" 
           rel="noopener noreferrer"
           className="group flex flex-col items-center gap-3.5 cursor-pointer mb-6"
@@ -445,7 +464,7 @@ function CreditsSection() {
               ]
             }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            className="relative w-48 h-24 md:w-60 md:h-30 rounded-2xl bg-white p-3 border-2 border-[#d4af37]/60 flex items-center justify-center group-hover:scale-105 group-hover:border-[#d4af37] transition-all duration-500 shadow-[0_0_20px_rgba(212,175,55,0.3)] overflow-hidden"
+            className="relative w-full max-w-[192px] sm:max-w-[220px] md:max-w-[240px] h-24 md:h-28 rounded-2xl bg-white p-3 border-2 border-[#d4af37]/60 flex items-center justify-center group-hover:scale-105 group-hover:border-[#d4af37] transition-all duration-500 shadow-[0_0_20px_rgba(212,175,55,0.3)] overflow-hidden"
           >
             <img 
               src="/logos/DOTR_Full_Color_Logo.png" 
@@ -467,7 +486,7 @@ function CreditsSection() {
         <div className="flex flex-col gap-3 w-full">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">
             <a 
-              href="http://dotr.in" 
+              href="https://dotr.in" 
               target="_blank" 
               rel="noopener noreferrer"
               className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-full border border-gold-400/20 bg-black/40 hover:bg-gold-500 hover:text-stone-950 font-sans text-xs tracking-wider text-[#f7e4a9] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_0_20px_rgba(212,175,55,0.35)] font-semibold cursor-pointer whitespace-nowrap"

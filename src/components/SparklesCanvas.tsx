@@ -14,12 +14,28 @@ export default function SparklesCanvas({ density = 60 }: SparklesCanvasProps) {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
-    let animationFrameId: number;
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+    let animationFrameId = 0;
+    let isRunning = true;
+    let dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+
+    const sizeCanvas = () => {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    sizeCanvas();
 
     // Particle Classes
     class GoldSparkle {
@@ -78,14 +94,17 @@ export default function SparklesCanvas({ density = 60 }: SparklesCanvasProps) {
       }
 
       draw(c: CanvasRenderingContext2D) {
-        c.save();
+        const alpha = Math.max(0, Math.min(1, this.opacity));
+        // Soft outer halo without expensive shadowBlur (critical for Safari/Edge 60fps)
+        c.beginPath();
+        c.arc(this.x, this.y, this.size * 2.4, 0, Math.PI * 2);
+        c.fillStyle = `rgba(187, 107, 217, ${(alpha * 0.22).toFixed(3)})`;
+        c.fill();
+
         c.beginPath();
         c.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        c.fillStyle = `rgba(187, 107, 217, ${Math.max(0, Math.min(1, this.opacity))})`;
-        c.shadowBlur = this.size * 5;
-        c.shadowColor = "#bb6bd9";
+        c.fillStyle = `rgba(216, 165, 240, ${alpha.toFixed(3)})`;
         c.fill();
-        c.restore();
       }
     }
 
@@ -158,8 +177,6 @@ export default function SparklesCanvas({ density = 60 }: SparklesCanvasProps) {
         c.bezierCurveTo(-this.size / 2, -this.size / 2, -this.size, this.size / 3, 0, this.size);
         c.bezierCurveTo(this.size, this.size / 3, this.size / 2, -this.size / 2, 0, 0);
         c.fillStyle = this.color;
-        c.shadowBlur = 4;
-        c.shadowColor = "rgba(142, 53, 167, 0.15)";
         c.fill();
         c.restore();
       }
@@ -184,24 +201,51 @@ export default function SparklesCanvas({ density = 60 }: SparklesCanvasProps) {
     initParticles();
 
     // Animation Loop
-    const animate = () => {
+    const renderFrame = () => {
       ctx.clearRect(0, 0, width, height);
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw(ctx);
+      }
+    };
 
-      particles.forEach((p) => {
-        p.update();
-        p.draw(ctx);
-      });
-
+    const animate = () => {
+      if (!isRunning) return;
+      renderFrame();
       animationFrameId = requestAnimationFrame(animate);
     };
 
-    animate();
+    if (prefersReducedMotion) {
+      renderFrame();
+    } else {
+      animate();
+    }
 
-    // Resize Handler
+    // Pause animation in background tabs to save battery/CPU across browsers
+    const handleVisibilityChange = () => {
+      if (prefersReducedMotion) return;
+      if (document.hidden) {
+        isRunning = false;
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      } else if (!isRunning) {
+        isRunning = true;
+        animate();
+      }
+    };
+
+    // Resize Handler (ignore minor mobile browser toolbar height shifts)
+    let resizeTimer: ReturnType<typeof setTimeout> | null = null;
     const handleResize = () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-      initParticles();
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        const prevWidth = width;
+        const prevHeight = height;
+        sizeCanvas();
+        if (Math.abs(width - prevWidth) > 20 || Math.abs(height - prevHeight) > 120) {
+          initParticles();
+          if (prefersReducedMotion) renderFrame();
+        }
+      }, 150);
     };
 
     // Mouse Move Handlers
@@ -223,19 +267,23 @@ export default function SparklesCanvas({ density = 60 }: SparklesCanvasProps) {
       }
     };
 
-    window.addEventListener("resize", handleResize);
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("resize", handleResize, { passive: true });
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
     window.addEventListener("mouseleave", handleMouseLeave);
     window.addEventListener("touchmove", handleTouchMove, { passive: true });
     window.addEventListener("touchend", handleMouseLeave);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      isRunning = false;
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      if (resizeTimer) clearTimeout(resizeTimer);
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseleave", handleMouseLeave);
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleMouseLeave);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [density]);
 

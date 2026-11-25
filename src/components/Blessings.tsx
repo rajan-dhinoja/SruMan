@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, Sparkles, Trash2, Edit2, ShieldAlert, LogOut, ArrowUp, ArrowDown, ChevronDown, ChevronUp, X, Check, Heart, MessageSquare } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
@@ -26,10 +26,13 @@ export default function Blessings() {
   // Date formatting helper
   const getDisplayDate = (wish: Wish) => {
     if (wish.created_at) {
-      return new Date(wish.created_at).toLocaleString('en-IN', {
-        day: '2-digit', month: 'short', year: 'numeric',
-        hour: '2-digit', minute: '2-digit', hour12: true
-      });
+      const parsed = new Date(wish.created_at);
+      if (!isNaN(parsed.getTime())) {
+        return parsed.toLocaleString('en-IN', {
+          day: '2-digit', month: 'short', year: 'numeric',
+          hour: '2-digit', minute: '2-digit', hour12: true
+        });
+      }
     }
     const idNum = Number(wish.id);
     if (!isNaN(idNum) && idNum > 1000000000000) {
@@ -67,38 +70,85 @@ export default function Blessings() {
     { id: "blue", name: "Soft Blue", bg: "from-blue-100 to-cyan-200", border: "border-blue-300", circle: "bg-blue-400" },
   ];
 
-  // Fetch wishes from API
-  const fetchWishes = async () => {
+  const isFetchingRef = useRef(false);
+  const pausePollingRef = useRef(false);
+
+  useEffect(() => {
+    pausePollingRef.current = Boolean(
+      showPasswordModal || editingWish || showGlobalModal || wishToDelete
+    );
+  }, [showPasswordModal, editingWish, showGlobalModal, wishToDelete]);
+
+  // Safe localStorage helper for Safari Private Mode / strict privacy browsers
+  const saveMyWishIds = (ids: string[]) => {
     try {
-      setLoading(true);
-      const response = await fetch(`/api/wishes?t=${Date.now()}`, {
-        cache: "no-store",
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setWishes(data);
-      }
-    } catch (error) {
-      console.error("Error fetching wishes:", error);
-    } finally {
-      setLoading(false);
+      localStorage.setItem("sruman_my_wishes", JSON.stringify(ids));
+    } catch {
+      // Ignore storage quota/security errors
     }
   };
 
-  useEffect(() => {
-    fetchWishes();
+  // Fetch wishes from API with timeout & in-flight guard so slow responses never stack or hang
+  const fetchWishes = useCallback(async (isInitial = false) => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
 
-    const mySaved = localStorage.getItem("sruman_my_wishes");
-    if (mySaved) {
-      try {
+    try {
+      if (isInitial) setLoading(true);
+      const response = await fetch(`/api/wishes?t=${Date.now()}`, {
+        cache: "no-store",
+        signal: controller.signal,
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setWishes(data);
+        }
+      }
+    } catch (error) {
+      if ((error as { name?: string })?.name !== "AbortError") {
+        console.error("Error fetching wishes:", error);
+      }
+    } finally {
+      clearTimeout(timeoutId);
+      isFetchingRef.current = false;
+      if (isInitial) setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchWishes(true);
+
+    try {
+      const mySaved = localStorage.getItem("sruman_my_wishes");
+      if (mySaved) {
         setMyWishIds(JSON.parse(mySaved));
-      } catch (e) {}
+      }
+    } catch {
+      // Ignore storage errors
     }
 
-    // Poll for new wishes every 3 seconds
-    const interval = setInterval(fetchWishes, 3000);
-    return () => clearInterval(interval);
-  }, []);
+    // Poll for new wishes every 5 seconds when tab is visible and no admin modal is open
+    const interval = setInterval(() => {
+      if (typeof document !== "undefined" && document.hidden) return;
+      if (pausePollingRef.current) return;
+      fetchWishes(false);
+    }, 5000);
+
+    const handleVisibility = () => {
+      if (!document.hidden && !pausePollingRef.current) {
+        fetchWishes(false);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
+  }, [fetchWishes]);
 
   const handlePostWish = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,13 +170,13 @@ export default function Blessings() {
         
         const updatedMyWishes = [newWish.id, ...myWishIds];
         setMyWishIds(updatedMyWishes);
-        localStorage.setItem("sruman_my_wishes", JSON.stringify(updatedMyWishes));
+        saveMyWishIds(updatedMyWishes);
 
         setName("");
         setMessage("");
         
         // Refresh wishes list
-        await fetchWishes();
+        await fetchWishes(false);
       }
     } catch (error) {
       console.error("Error posting wish:", error);
@@ -178,15 +228,15 @@ export default function Blessings() {
       if (response.ok) {
         const updatedMy = myWishIds.filter((mid) => mid !== wishToDelete);
         setMyWishIds(updatedMy);
-        localStorage.setItem("sruman_my_wishes", JSON.stringify(updatedMy));
+        saveMyWishIds(updatedMy);
         
         // Refresh wishes list just in case
-        fetchWishes();
+        fetchWishes(false);
       }
     } catch (error) {
       console.error("Error deleting wish:", error);
       // Revert optimistic update
-      fetchWishes();
+      fetchWishes(false);
       alert("Failed to delete wish. Please try again.");
     } finally {
       setWishToDelete(null);
@@ -207,7 +257,7 @@ export default function Blessings() {
       if (response.ok) {
         setEditingWish(null);
         // Refresh wishes list
-        await fetchWishes();
+        await fetchWishes(false);
       }
     } catch (error) {
       console.error("Error updating wish:", error);
@@ -218,18 +268,17 @@ export default function Blessings() {
   const handleClearAll = async () => {
     if (window.confirm("Delete ALL wishes from the wall?")) {
       try {
-        // Delete each wish individually
         const regularWishes = wishes.filter(w => w.id !== "global_thank_you_card");
-        for (const wish of regularWishes) {
-          await fetch(`/api/wishes?id=${wish.id}`, { method: "DELETE" });
-        }
+        await Promise.all(
+          regularWishes.map((wish) => fetch(`/api/wishes?id=${wish.id}`, { method: "DELETE" }))
+        );
         
-        setWishes([]);
+        setWishes((prev) => prev.filter(w => w.id === "global_thank_you_card"));
         setMyWishIds([]);
-        localStorage.setItem("sruman_my_wishes", JSON.stringify([]));
+        saveMyWishIds([]);
         
         // Refresh wishes list
-        await fetchWishes();
+        await fetchWishes(false);
       } catch (error) {
         console.error("Error clearing wishes:", error);
         alert("Failed to clear wishes. Please try again.");
@@ -284,7 +333,7 @@ export default function Blessings() {
 
       if (response.ok) {
         setShowGlobalModal(false);
-        await fetchWishes();
+        await fetchWishes(false);
       } else {
         alert("Failed to save global thank you message.");
       }
@@ -301,7 +350,7 @@ export default function Blessings() {
         method: "DELETE",
       });
       if (response.ok) {
-        await fetchWishes();
+        await fetchWishes(false);
       }
     } catch (error) {
       console.error("Error deleting global thank you:", error);
@@ -359,13 +408,13 @@ export default function Blessings() {
       <div className="max-w-6xl mx-auto">
         
         {/* Section Title with Admin Trigger */}
-        <div className="text-center mb-16 relative">
+        <div className="text-center mb-10 sm:mb-16 relative">
           <span className="font-sans text-[10px] sm:text-xs tracking-[0.2em] text-[#8a1525]/85 uppercase font-bold">
             {t("blessings.blessingsLove")}
           </span>
           <h2 
             onClick={handleHeaderClick}
-            className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-[#8a1525] tracking-wide mb-0 mt-3 cursor-pointer select-none active:scale-95 transition-transform"
+            className="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-[#8a1525] tracking-wide mb-0 mt-3 cursor-pointer select-none active:scale-95 transition-transform"
             title="Click 5 times for Admin Actions"
           >
             :: {t("blessings.mainTitle")} ::
@@ -380,14 +429,14 @@ export default function Blessings() {
 
           {/* Admin Mode Controls */}
           {isAdmin && (
-            <div className="mt-4 flex items-center justify-center gap-3">
-              <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500 text-white font-sans text-[10px] font-bold uppercase tracking-wider shadow-sm animate-pulse">
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 sm:gap-3 px-2">
+              <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500 text-white font-sans text-[10px] font-bold uppercase tracking-wider shadow-sm animate-pulse">
                 <ShieldAlert className="w-3.5 h-3.5" />
                 Admin Controls Active
               </span>
               <button 
                 onClick={() => setIsAdmin(false)}
-                className="flex items-center gap-1 px-3 py-1 rounded-full border border-stone-300 bg-white hover:bg-stone-50 text-stone-600 text-[10px] font-bold uppercase tracking-wider shadow-sm cursor-pointer"
+                className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-stone-300 bg-white hover:bg-stone-50 text-stone-600 text-[10px] font-bold uppercase tracking-wider shadow-sm cursor-pointer"
               >
                 <LogOut className="w-3 h-3 text-[#5e1f70]" />
                 Logout
@@ -398,14 +447,14 @@ export default function Blessings() {
                   setGlobalMessage(globalThankYouCard?.message || "");
                   setShowGlobalModal(true);
                 }}
-                className="flex items-center gap-1 px-3 py-1 rounded-full bg-purple-600 hover:bg-purple-700 text-white text-[10px] font-bold uppercase tracking-wider shadow-sm cursor-pointer"
+                className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-purple-600 hover:bg-purple-700 text-white text-[10px] font-bold uppercase tracking-wider shadow-sm cursor-pointer"
               >
                 <Heart className="w-3 h-3" />
                 Global Thank You
               </button>
               <button 
                 onClick={handleClearAll}
-                className="flex items-center gap-1 px-3 py-1 rounded-full bg-stone-900 hover:bg-red-650 text-white text-[10px] font-bold uppercase tracking-wider shadow-sm cursor-pointer"
+                className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-stone-900 hover:bg-red-600 text-white text-[10px] font-bold uppercase tracking-wider shadow-sm cursor-pointer"
               >
                 Clear All
               </button>
@@ -413,10 +462,10 @@ export default function Blessings() {
           )}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           {/* Left Column: Form (4 cols) */}
-          <div className="lg:col-span-4">
-              <div className="glass-card rounded-3xl p-6 border border-gold-300/20 shadow-sm sticky top-28">
+          <div className="lg:col-span-4 w-full">
+              <div className="glass-card rounded-3xl p-5 sm:p-6 border border-gold-300/20 shadow-sm lg:sticky lg:top-28">
                 <h3 className="font-serif text-xl font-light text-stone-900 mb-4 flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-gold-500" />
                   {t("blessings.writeWishTitle")}
@@ -489,7 +538,7 @@ export default function Blessings() {
               <div className="pt-2 pb-2 pl-1 pr-2">
                 <div className="w-full p-8 sm:p-10 rounded-tr-[4rem] rounded-bl-[4rem] rounded-tl-xl rounded-br-xl border-2 bg-gradient-to-br from-[#fffdfa] via-[#fff9e6] to-[#fcf4d9] backdrop-blur-xl border-[#d4af37]/40 ring-[6px] ring-[#d4af37]/10 shadow-[0_20px_50px_rgba(212,175,55,0.15)] flex flex-col items-center text-center relative overflow-hidden group">
                   {/* Decorative Elements */}
-                  <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')] opacity-40 pointer-events-none mix-blend-overlay" />
+                  <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-amber-50/30 via-transparent to-amber-100/20 opacity-60 pointer-events-none" />
                   
                   {/* Golden Ornaments */}
                   <div className="absolute top-0 left-0 w-16 h-16 border-t-2 border-l-2 border-[#d4af37]/50 rounded-tl-xl m-2 pointer-events-none" />
@@ -560,7 +609,7 @@ export default function Blessings() {
                     return (
                       <div 
                         key={w.id} 
-                        className={`p-6 rounded-[1.8rem] border bg-gradient-to-br backdrop-blur-md ${themeMatch.bg} ${themeMatch.border} ring-4 ring-purple-500/30 shadow-[0_12px_24px_rgba(147,51,234,0.15)] border-purple-550 flex flex-col justify-between relative`}
+                        className={`p-6 rounded-[1.8rem] border bg-gradient-to-br backdrop-blur-md ${themeMatch.bg} ${themeMatch.border} ring-4 ring-purple-500/30 shadow-[0_12px_24px_rgba(147,51,234,0.15)] border-purple-500 flex flex-col justify-between relative`}
                       >
                         {/* Delete own wish button */}
                         <button
@@ -574,7 +623,7 @@ export default function Blessings() {
                           <div className="flex justify-between items-start mb-4">
                             <div>
                               <h4 className="font-serif text-lg font-bold text-stone-900">{w.name}</h4>
-                              <span className="inline-block mt-0.5 px-2.5 py-0.5 rounded-full bg-purple-650 text-[#fdfbf7] font-sans text-[8px] tracking-wider uppercase font-bold shadow-sm">
+                              <span className="inline-block mt-0.5 px-2.5 py-0.5 rounded-full bg-purple-700 text-[#fdfbf7] font-sans text-[8px] tracking-wider uppercase font-bold shadow-sm">
                                 Pinned Blessing ✨
                               </span>
                             </div>
@@ -630,7 +679,7 @@ export default function Blessings() {
                                   {w.name}
                                 </h4>
                                 {isMyWish && (
-                                  <span className="inline-block px-1.5 py-0.5 rounded bg-purple-650 text-white font-sans text-[7px] font-bold uppercase tracking-wider">
+                                  <span className="inline-block px-1.5 py-0.5 rounded bg-purple-700 text-white font-sans text-[7px] font-bold uppercase tracking-wider">
                                     Your Blessing
                                   </span>
                                 )}
@@ -685,7 +734,7 @@ export default function Blessings() {
                                     {w.name}
                                   </h4>
                                   {isMyWish && (
-                                    <span className="inline-block px-1.5 py-0.5 rounded bg-purple-650 text-white font-sans text-[7px] font-bold uppercase tracking-wider">
+                                    <span className="inline-block px-1.5 py-0.5 rounded bg-purple-700 text-white font-sans text-[7px] font-bold uppercase tracking-wider">
                                       Your Blessing
                                     </span>
                                   )}
@@ -709,7 +758,7 @@ export default function Blessings() {
 
             {/* View 2: Static Grid List (Active when ShowAll is expanded or when in Admin Mode) */}
             {(isAdmin || showAll) && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:max-h-[600px] lg:overflow-y-auto pr-2 pt-2 pb-2 pl-1 scrollbar-thin">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:max-h-[600px] lg:overflow-y-auto pr-0 sm:pr-2 pt-2 pb-2 pl-0 sm:pl-1 scrollbar-thin">
                 <AnimatePresence>
                   {regularWishes.map((w, idx) => {
                     const isMyWish = myWishIds.includes(w.id);
@@ -729,16 +778,16 @@ export default function Blessings() {
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.9 }}
-                        className={`p-6 rounded-[1.8rem] border bg-gradient-to-br backdrop-blur-md ${themeClass} flex flex-col justify-between shadow-md relative group`}
+                        className={`p-5 sm:p-6 rounded-[1.5rem] sm:rounded-[1.8rem] border bg-gradient-to-br backdrop-blur-md ${themeClass} flex flex-col justify-between shadow-md relative group`}
                       >
                         <div>
-                          {/* Admin Action Buttons & Reordering */}
+                          {/* Admin Action Buttons & Reordering (Dedicated top row so it never overlaps name/date) */}
                           {isAdmin && (
-                            <div className="absolute top-3 right-3 flex items-center gap-1 z-20">
+                            <div className="flex items-center justify-end gap-1.5 mb-3 pb-2 border-b border-black/10 z-20">
                               <button
                                 onClick={() => handleMoveWish(idx, "up")}
                                 disabled={idx === 0}
-                                className="p-1 rounded bg-white border border-stone-200 text-stone-600 hover:bg-stone-50 cursor-pointer disabled:opacity-30 disabled:pointer-events-none"
+                                className="p-1.5 rounded-lg bg-white border border-stone-200 text-stone-600 hover:bg-stone-50 cursor-pointer disabled:opacity-30 disabled:pointer-events-none"
                                 title="Move Up"
                               >
                                 <ArrowUp className="w-3.5 h-3.5" />
@@ -746,24 +795,24 @@ export default function Blessings() {
                               <button
                                 onClick={() => handleMoveWish(idx, "down")}
                                 disabled={idx === regularWishes.length - 1}
-                                className="p-1 rounded bg-white border border-stone-200 text-stone-600 hover:bg-stone-50 cursor-pointer disabled:opacity-30 disabled:pointer-events-none"
+                                className="p-1.5 rounded-lg bg-white border border-stone-200 text-stone-600 hover:bg-stone-50 cursor-pointer disabled:opacity-30 disabled:pointer-events-none"
                                 title="Move Down"
                               >
                                 <ArrowDown className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => setEditingWish(w)}
-                                className="p-1 rounded-full bg-white border border-stone-200 text-blue-500 hover:bg-blue-50 cursor-pointer"
+                                className="p-1.5 rounded-full bg-white border border-stone-200 text-blue-500 hover:bg-blue-50 cursor-pointer"
                                 title="Edit Wish"
                               >
-                                <Edit2 className="w-3 h-3" />
+                                <Edit2 className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => handleDeleteWish(w.id)}
-                                className="p-1 rounded-full bg-white border border-stone-200 text-red-500 hover:bg-red-550 cursor-pointer"
+                                className="p-1.5 rounded-full bg-white border border-stone-200 text-red-500 hover:bg-red-50 cursor-pointer"
                                 title="Delete Wish"
                               >
-                                <Trash2 className="w-3 h-3" />
+                                <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             </div>
                           )}
@@ -779,23 +828,23 @@ export default function Blessings() {
                             </button>
                           )}
 
-                          <div className="flex justify-between items-start mb-4 pr-12">
-                            <div>
-                              <h4 className="font-serif text-lg font-bold text-stone-900 truncate">
+                          <div className={`flex flex-wrap justify-between items-start gap-2 mb-3 sm:mb-4 ${isMyWish && !isAdmin ? "pr-10" : ""}`}>
+                            <div className="min-w-0">
+                              <h4 className="font-serif text-base sm:text-lg font-bold text-stone-900 truncate">
                                 {w.name}
                               </h4>
                               {isMyWish && (
-                                <span className="inline-block mt-0.5 px-2.5 py-0.5 rounded-full bg-purple-650 text-[#fdfbf7] font-sans text-[8px] tracking-wider uppercase font-bold shadow-sm">
+                                <span className="inline-block mt-0.5 px-2.5 py-0.5 rounded-full bg-purple-700 text-[#fdfbf7] font-sans text-[8px] tracking-wider uppercase font-bold shadow-sm">
                                   Your Blessing ✨
                                 </span>
                               )}
                             </div>
-                            <span className="font-sans text-[9px] text-stone-400 uppercase font-semibold flex-shrink-0 mt-1">
+                            <span className="font-sans text-[9px] text-stone-500 uppercase font-semibold flex-shrink-0 mt-1">
                               {getDisplayDate(w)}
                             </span>
                           </div>
 
-                          <p className="font-sans text-sm text-stone-900 leading-relaxed font-semibold">
+                          <p className="font-sans text-xs sm:text-sm text-stone-900 leading-relaxed font-semibold break-words">
                             &ldquo;{w.message}&rdquo;
                           </p>
                         </div>
@@ -839,11 +888,11 @@ export default function Blessings() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-3xl border border-gold-300/20 max-w-sm w-full p-6 shadow-2xl flex flex-col relative"
+              className="bg-white rounded-3xl border border-gold-300/20 max-w-sm w-full p-5 sm:p-6 shadow-2xl flex flex-col relative max-h-[90dvh] overflow-y-auto"
             >
               <button 
                 onClick={() => setShowPasswordModal(false)}
-                className="absolute top-4 right-4 text-stone-400 hover:text-stone-605 cursor-pointer"
+                className="absolute top-4 right-4 text-stone-400 hover:text-stone-600 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -883,11 +932,11 @@ export default function Blessings() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-3xl border border-gold-300/20 max-w-md w-full p-6 shadow-2xl flex flex-col relative"
+              className="bg-white rounded-3xl border border-gold-300/20 max-w-md w-full p-5 sm:p-6 shadow-2xl flex flex-col relative max-h-[90dvh] overflow-y-auto"
             >
               <button 
                 onClick={() => setEditingWish(null)}
-                className="absolute top-4 right-4 text-stone-400 hover:text-stone-605 cursor-pointer"
+                className="absolute top-4 right-4 text-stone-400 hover:text-stone-600 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -970,7 +1019,7 @@ export default function Blessings() {
                   <button
                     type="button"
                     onClick={() => setEditingWish(null)}
-                    className="flex-1 py-3 rounded-full border border-stone-200 hover:bg-stone-50 text-stone-605 font-sans text-xs uppercase tracking-widest transition-all cursor-pointer font-bold"
+                    className="flex-1 py-3 rounded-full border border-stone-200 hover:bg-stone-50 text-stone-600 font-sans text-xs uppercase tracking-widest transition-all cursor-pointer font-bold"
                   >
                     Cancel
                   </button>
@@ -988,11 +1037,11 @@ export default function Blessings() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-3xl border border-rose-300/20 max-w-lg w-full p-6 sm:p-8 shadow-2xl flex flex-col relative"
+              className="bg-white rounded-3xl border border-rose-300/20 max-w-lg w-full p-5 sm:p-8 shadow-2xl flex flex-col relative max-h-[90dvh] overflow-y-auto"
             >
               <button 
                 onClick={() => setShowGlobalModal(false)}
-                className="absolute top-4 right-4 text-stone-400 hover:text-stone-605 cursor-pointer"
+                className="absolute top-4 right-4 text-stone-400 hover:text-stone-600 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1047,7 +1096,7 @@ export default function Blessings() {
                   <button
                     type="button"
                     onClick={() => setShowGlobalModal(false)}
-                    className="flex-1 py-3.5 rounded-full border border-stone-200 hover:bg-stone-50 text-stone-605 font-sans text-xs uppercase tracking-widest transition-all cursor-pointer font-bold"
+                    className="flex-1 py-3.5 rounded-full border border-stone-200 hover:bg-stone-50 text-stone-600 font-sans text-xs uppercase tracking-widest transition-all cursor-pointer font-bold"
                   >
                     Cancel
                   </button>
@@ -1066,7 +1115,7 @@ export default function Blessings() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-3xl border border-red-300/20 max-w-[320px] w-full p-6 shadow-2xl flex flex-col items-center text-center relative"
+              className="bg-white rounded-3xl border border-red-300/20 max-w-[340px] w-full p-5 sm:p-6 shadow-2xl flex flex-col items-center text-center relative max-h-[90dvh] overflow-y-auto"
             >
               <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-500 mb-4">
                 <Trash2 className="w-6 h-6" />
@@ -1081,7 +1130,7 @@ export default function Blessings() {
               <div className="flex gap-3 w-full">
                 <button
                   onClick={() => setWishToDelete(null)}
-                  className="flex-1 py-3 rounded-full border border-stone-200 hover:bg-stone-50 text-stone-605 font-sans text-xs uppercase tracking-widest transition-all cursor-pointer font-bold"
+                  className="flex-1 py-3 rounded-full border border-stone-200 hover:bg-stone-50 text-stone-600 font-sans text-xs uppercase tracking-widest transition-all cursor-pointer font-bold"
                 >
                   Cancel
                 </button>

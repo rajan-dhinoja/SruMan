@@ -16,10 +16,10 @@ export default function HubBridge({ current }: HubBridgeProps) {
       initial={{ opacity: 0, y: -16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-      className="fixed top-3.5 left-3.5 sm:top-5 sm:left-6 z-50 select-none pointer-events-auto"
+      className="fixed top-3 left-3 sm:top-5 sm:left-6 z-50 select-none pointer-events-auto max-w-[calc(100vw-24px)]"
     >
       {/* Royal Glassmorphic Floating Capsule */}
-      <div className="relative group flex items-center p-1 sm:p-1.5 rounded-full bg-gradient-to-r from-[#14021c]/95 via-[#22052e]/95 to-[#14021c]/95 backdrop-blur-xl border border-amber-400/40 shadow-[0_8px_32px_rgba(10,1,15,0.6),_0_0_16px_rgba(212,175,55,0.18)] hover:border-amber-400/60 hover:shadow-[0_10px_38px_rgba(10,1,15,0.7),_0_0_24px_rgba(212,175,55,0.28)] transition-all duration-500">
+      <div className="relative group flex items-center p-1 sm:p-1.5 rounded-full bg-gradient-to-r from-[#14021c]/95 via-[#22052e]/95 to-[#14021c]/95 backdrop-blur-xl border border-amber-400/40 shadow-[0_8px_32px_rgba(10,1,15,0.6),_0_0_16px_rgba(212,175,55,0.18)] hover:border-amber-400/60 hover:shadow-[0_10px_38px_rgba(10,1,15,0.7),_0_0_24px_rgba(212,175,55,0.28)] transition-all duration-500 max-w-full overflow-x-auto no-scrollbar">
         {/* Subtle Ambient Golden Shimmer Beam */}
         <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-amber-400/10 to-transparent pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
 

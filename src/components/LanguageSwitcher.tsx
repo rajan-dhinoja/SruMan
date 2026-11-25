@@ -14,14 +14,14 @@ export default function LanguageSwitcher() {
   ] as const;
 
   return (
-    <div className="fixed bottom-6 md:bottom-auto md:top-5 left-1/2 md:left-auto md:right-6 sm:md:right-8 -translate-x-1/2 md:translate-x-0 z-[70] flex items-center bg-[#fbf9fb]/90 backdrop-blur-xl border border-[#d4af37]/45 p-[3px] rounded-full shadow-[0_12px_40px_rgba(94,31,112,0.22),_0_0_20px_rgba(212,175,55,0.18)] select-none max-w-[calc(100vw-32px)] md:max-w-none overflow-x-auto no-scrollbar transition-all duration-300">
+    <div className="fixed bottom-4 sm:bottom-6 md:bottom-auto md:top-5 left-1/2 md:left-auto md:right-6 lg:right-8 -translate-x-1/2 md:translate-x-0 z-[70] flex items-center bg-[#fbf9fb]/90 backdrop-blur-xl border border-[#d4af37]/45 p-[3px] rounded-full shadow-[0_12px_40px_rgba(94,31,112,0.22),_0_0_20px_rgba(212,175,55,0.18)] select-none max-w-[calc(100vw-24px)] md:max-w-none overflow-x-auto no-scrollbar transition-all duration-300">
       {languages.map((lang) => {
         const isActive = language === lang.code;
         return (
           <button
             key={lang.code}
             onClick={() => setLanguage(lang.code)}
-            className={`relative px-4 sm:px-5 py-2 sm:py-2.5 rounded-full font-sans text-[10px] sm:text-xs transition-all duration-300 cursor-pointer whitespace-nowrap ${
+            className={`relative px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full font-sans text-[10px] sm:text-xs transition-all duration-300 cursor-pointer whitespace-nowrap ${
               isActive
                 ? "text-stone-900 font-bold"
                 : "text-purple-700 hover:text-purple-900 font-medium"

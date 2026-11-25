@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Sparkles,
   Heart,
@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import SparklesCanvas from "@/components/SparklesCanvas";
 import HubBridge from "@/components/HubBridge";
-import Preloader from "@/components/Preloader";
 import confetti from "canvas-confetti";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -85,7 +84,6 @@ const CONTENT = {
 
 export default function WeddingPage() {
   const { language } = useLanguage();
-  const [pageLoading, setPageLoading] = useState(true);
   const [blessingCount, setBlessingCount] = useState(0);
 
   const t = CONTENT[language] ?? CONTENT.en;
@@ -96,11 +94,6 @@ export default function WeddingPage() {
       document.title = t.title;
     }
   }, [t.title]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setPageLoading(false), 500);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Flower Shower on clicking logo or blessing button
   const triggerCelebration = () => {
@@ -144,18 +137,7 @@ export default function WeddingPage() {
 
   return (
     <>
-      <AnimatePresence>
-        {pageLoading && (
-          <Preloader
-            key="wedding-preloader"
-            textKey="preloader.weddingText"
-            subtitleKey="preloader.weddingSubtitle"
-            onComplete={() => setPageLoading(false)}
-          />
-        )}
-      </AnimatePresence>
-
-      <div className="relative min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-[#0e0214] via-[#1a0425] to-[#0a010f] text-[#fbf9fb] overflow-hidden select-none px-4 pt-24 pb-24 md:pt-20 md:pb-16">
+      <div className="relative min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-[#0e0214] via-[#1a0425] to-[#0a010f] text-[#fbf9fb] overflow-x-hidden select-none px-4 pt-24 pb-28 md:pt-24 md:pb-16">
         {/* Floating Canvas Particles */}
         <SparklesCanvas density={50} />
 
@@ -297,9 +279,9 @@ export default function WeddingPage() {
             </div>
 
             {/* Prominent Coming Soon Pill */}
-            <div className="relative z-10 inline-flex items-center gap-3 px-7 py-2.5 sm:px-10 sm:py-3 rounded-full bg-gradient-to-r from-amber-500/15 via-amber-400/25 to-amber-500/15 border border-amber-300/50 shadow-[0_0_30px_rgba(212,175,55,0.25)] overflow-hidden">
+            <div className="relative z-10 inline-flex items-center justify-center gap-2 sm:gap-3 px-5 py-2 sm:px-10 sm:py-3 rounded-full bg-gradient-to-r from-amber-500/15 via-amber-400/25 to-amber-500/15 border border-amber-300/50 shadow-[0_0_30px_rgba(212,175,55,0.25)] overflow-hidden max-w-full">
               <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 animate-pulse flex-shrink-0" />
-              <span className="font-serif text-lg sm:text-2xl md:text-3xl font-bold tracking-[0.22em] sm:tracking-[0.28em] text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-[#fae4a8] to-amber-300 uppercase">
+              <span className="font-serif text-base sm:text-2xl md:text-3xl font-bold tracking-[0.16em] sm:tracking-[0.28em] text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-[#fae4a8] to-amber-300 uppercase text-center">
                 {t.comingSoon}
               </span>
               <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 animate-pulse flex-shrink-0" />

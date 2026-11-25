@@ -90,7 +90,7 @@ export default function RSVP() {
                   <label className="font-sans text-[10px] uppercase tracking-wider text-stone-400 font-semibold mb-2 block">
                     શું આપ પધારશો?
                   </label>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 xs:grid-cols-2 gap-3 sm:gap-4">
                     <button
                       type="button"
                       onClick={() => setIsAttending("yes")}

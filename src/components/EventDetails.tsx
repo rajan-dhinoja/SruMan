@@ -75,10 +75,26 @@ export default function EventDetails() {
     window.open(gCalUrl, "_blank");
   };
 
-  const handleCopyAddress = () => {
-    navigator.clipboard.writeText(t("venue.address"));
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopyAddress = async () => {
+    const addr = t("venue.address");
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(addr);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = addr;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard unavailable in restricted browser context
+    }
   };
 
   const countdownItems = [
@@ -163,7 +179,7 @@ export default function EventDetails() {
           <span className="font-sans text-[10px] sm:text-xs tracking-[0.25em] text-purple-750 uppercase font-bold">
             {t("eventDetails.joinCelebration")}
           </span>
-          <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-[#5e1f70] tracking-wide mb-0 mt-5">
+          <h2 className="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-[#5e1f70] tracking-wide mb-0 mt-5">
             :: {t("eventDetails.mainTitle")} ::
           </h2>
           
@@ -177,7 +193,7 @@ export default function EventDetails() {
 
         {/* Live Countdown Card with Ceremony Start Time details */}
         <div className="mb-12">
-          <div className="relative max-w-4xl mx-auto rounded-[2.5rem] bg-white/50 backdrop-blur-md p-6 sm:p-8 border border-purple-300/20 shadow-[0_12px_40px_rgba(94,31,112,0.04)] text-center overflow-visible">
+          <div className="relative max-w-4xl mx-auto rounded-[2rem] sm:rounded-[2.5rem] bg-white/50 backdrop-blur-md p-4 sm:p-8 border border-purple-300/20 shadow-[0_12px_40px_rgba(94,31,112,0.04)] text-center overflow-visible">
             {/* Corner ornaments */}
             <div className="absolute top-4 left-4 w-6 h-6 border-t border-l border-[#d4af37]/45 rounded-tl-lg pointer-events-none" />
             <div className="absolute top-4 right-4 w-6 h-6 border-t border-r border-[#d4af37]/45 rounded-tr-lg pointer-events-none" />
@@ -207,16 +223,16 @@ export default function EventDetails() {
             </div>
 
 
-            <div className="grid grid-cols-5 gap-2 sm:gap-6 max-w-3xl mx-auto relative z-10">
+            <div className="grid grid-cols-5 gap-1.5 sm:gap-4 md:gap-6 max-w-3xl mx-auto relative z-10">
               {countdownItems.map((item, idx) => (
-                <div key={idx} className="flex flex-col items-center">
-                  <div className="w-12 h-14 sm:w-24 sm:h-24 rounded-2xl bg-white border border-[#d4af37]/25 flex items-center justify-center shadow-md relative group overflow-hidden">
+                <div key={idx} className="flex flex-col items-center min-w-0">
+                  <div className="w-full aspect-square max-w-[3.25rem] sm:max-w-[5.5rem] md:max-w-[6rem] rounded-xl sm:rounded-2xl bg-white border border-[#d4af37]/25 flex items-center justify-center shadow-md relative group overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-tr from-[#d4af37]/5 to-[#5e1f70]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    <span className="font-serif text-lg sm:text-4xl font-bold text-purple-700 tracking-tight">
+                    <span className="font-serif text-base sm:text-3xl md:text-4xl font-bold text-purple-700 tracking-tight">
                       {mounted ? formatNumber(String(item.value).padStart(2, "0")) : formatNumber("00")}
                     </span>
                   </div>
-                  <span className="font-sans text-[12px] sm:text-xs tracking-widest uppercase text-stone-500 mt-2.5 font-bold">
+                  <span className="font-sans text-[9px] sm:text-xs tracking-normal sm:tracking-widest uppercase text-stone-500 mt-1.5 sm:mt-2.5 font-bold truncate max-w-full">
                     {item.label}
                   </span>
                 </div>

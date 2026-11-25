@@ -11,7 +11,7 @@ export default function Welcome() {
   return (
     <section id="welcome-section" className="w-full flex flex-col gap-10 pt-20 sm:pt-24 md:pt-28 pb-10 sm:pb-16 px-4 bg-[#fdf9ff] relative overflow-x-hidden select-none">
       {/* Traditional Side Garlands (Toran / Hanging Flowers) */}
-      <div className="absolute top-0 left-0 bottom-0 w-12 sm:w-20 pointer-events-none z-10 flex flex-col justify-between items-center opacity-60">
+      <div className="absolute top-0 left-0 bottom-0 w-7 sm:w-16 md:w-20 pointer-events-none z-10 flex flex-col justify-between items-center opacity-35 sm:opacity-60">
         <svg viewBox="0 0 40 400" className="w-full h-full fill-none stroke-[#d4af37]" strokeWidth="1">
           {/* Hanging flowers garland */}
           <line x1="20" y1="0" x2="20" y2="400" strokeDasharray="3,6" />
@@ -25,7 +25,7 @@ export default function Welcome() {
         </svg>
       </div>
 
-      <div className="absolute top-0 right-0 bottom-0 w-12 sm:w-20 pointer-events-none z-10 flex flex-col justify-between items-center opacity-60">
+      <div className="absolute top-0 right-0 bottom-0 w-7 sm:w-16 md:w-20 pointer-events-none z-10 flex flex-col justify-between items-center opacity-35 sm:opacity-60">
         <svg viewBox="0 0 40 400" className="w-full h-full fill-none stroke-[#d4af37]" strokeWidth="1">
           <line x1="20" y1="0" x2="20" y2="400" strokeDasharray="3,6" />
           {[...Array(8)].map((_, i) => (
@@ -180,7 +180,7 @@ export default function Welcome() {
           transition={{ delay: 0.7, duration: 1.2, ease: [0.25, 1, 0.5, 1] }}
           className="leading-tight flex flex-col items-center select-none"
         >
-          <span className="font-alex text-5xl xs:text-6xl sm:text-8xl md:text-9xl lg:text-[10rem] tracking-wide capitalize bg-gradient-to-r from-[#5e1f70] via-[#a3449c] to-[#d4af37] bg-clip-text text-transparent filter drop-shadow-[0_2px_10px_rgba(94,31,112,0.15)] px-6 py-2">{t("welcome.ringCeremony")}</span>
+          <span className="font-alex text-4xl xs:text-5xl sm:text-7xl md:text-8xl lg:text-[9.5rem] tracking-wide capitalize bg-gradient-to-r from-[#5e1f70] via-[#a3449c] to-[#d4af37] bg-clip-text text-transparent filter drop-shadow-[0_2px_10px_rgba(94,31,112,0.15)] px-2 sm:px-6 py-2 text-center break-words max-w-full">{t("welcome.ringCeremony")}</span>
           
           <div className="flex items-center justify-center gap-3 mt-3">
             <span className="w-10 sm:w-16 h-[1.2px] bg-[#d4af37]/45" />

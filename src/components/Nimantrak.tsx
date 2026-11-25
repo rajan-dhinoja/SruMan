@@ -31,12 +31,12 @@ export default function Nimantrak() {
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-gold-200/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Main Container */}
-      <div className="max-w-6xl mx-auto w-full flex flex-col items-center z-20 flex-grow justify-center px-4">
+      <div className="max-w-6xl mx-auto w-full flex flex-col items-center z-20 flex-grow justify-center px-1 sm:px-4">
         <motion.div
           className="text-center w-full"
         >
           {/* Section Header */}
-          <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-[#5e1f70] tracking-wide mb-0">
+          <h2 className="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-[#5e1f70] tracking-wide mb-0">
             {t("nimantrak.title")}
           </h2>
           
@@ -50,7 +50,7 @@ export default function Nimantrak() {
 
         {/* Content Card with Traditional Borders */}
         <motion.div
-          className="relative w-full max-w-5xl bg-white/40 backdrop-blur-sm p-6 sm:p-12 md:p-16 rounded-[2.5rem] border border-[#5e1f70]/15 shadow-[0_12px_40px_rgb(94,31,112,0.04)] flex flex-col items-center text-center"
+          className="relative w-full max-w-5xl bg-white/40 backdrop-blur-sm p-5 sm:p-12 md:p-16 rounded-[2rem] sm:rounded-[2.5rem] border border-[#5e1f70]/15 shadow-[0_12px_40px_rgb(94,31,112,0.04)] flex flex-col items-center text-center overflow-hidden"
         >
           {/* Decorative Corner Borders */}
           <div className="absolute top-5 left-5 w-8 h-8 border-t-2 border-l-2 border-[#5e1f70]/30 rounded-tl-xl pointer-events-none" />

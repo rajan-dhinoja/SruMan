@@ -15,6 +15,7 @@ function createPool(): Pool {
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
+    connectTimeout: 5000,
     enableKeepAlive: true,
     keepAliveInitialDelay: 10000,
     charset: "utf8mb4",

@@ -64,6 +64,11 @@ export default function PalaceGateEntry({ onEnter }: PalaceGateEntryProps) {
 
     let isMounted = true;
 
+    // Hard safety timeout so slow networks or Safari img.decode() never trap the user on the preloader
+    const safetyTimer = setTimeout(() => {
+      if (isMounted) setAssetsLoaded(true);
+    }, 1500);
+
     Promise.all(
       imagesToLoad.map(src => {
         return new Promise<void>((resolve) => {
@@ -85,17 +90,19 @@ export default function PalaceGateEntry({ onEnter }: PalaceGateEntryProps) {
         });
       })
     ).then(() => {
+      clearTimeout(safetyTimer);
       if (isMounted) {
         requestAnimationFrame(() => {
           setTimeout(() => {
             if (isMounted) setAssetsLoaded(true);
-          }, 150);
+          }, 100);
         });
       }
     });
 
     return () => {
       isMounted = false;
+      clearTimeout(safetyTimer);
     };
   }, []);
 
@@ -291,13 +298,13 @@ export default function PalaceGateEntry({ onEnter }: PalaceGateEntryProps) {
             <motion.div
               animate={isEntering ? { opacity: 0, scale: 0.7 } : { opacity: 1, scale: 1 }}
               transition={{ duration: 0.4, ease: "easeInOut" }}
-              className="absolute z-30 -translate-x-1/2 -translate-y-1/2 left-1/2 top-[48%] flex flex-col items-center justify-center text-center px-4"
+              className="absolute z-30 -translate-x-1/2 -translate-y-1/2 left-1/2 top-[44%] sm:top-[48%] flex flex-col items-center justify-center text-center px-3 sm:px-4 max-w-[92vw]"
             >
               <motion.div
                 initial={false}
                 animate={{ scale: 1, opacity: 1, rotate: 0 }}
                 transition={{ duration: 1.3, ease: [0.16, 1, 0.3, 1] }}
-                className="w-32 h-32 md:w-52 md:h-52 mb-4 md:mb-8 relative flex items-center justify-center"
+                className="w-28 h-28 sm:w-40 sm:h-40 md:w-52 md:h-52 mb-3 sm:mb-5 md:mb-8 relative flex items-center justify-center"
               >
                 {/* Outer spinning ring */}
                 <motion.div
@@ -344,7 +351,7 @@ export default function PalaceGateEntry({ onEnter }: PalaceGateEntryProps) {
                 transition={{ duration: 0.8 }}
                 whileHover={{ scale: 1.05, boxShadow: "0 0 50px rgba(212,175,55,0.7)" }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-3 px-10 py-4 rounded-full font-sans text-xs tracking-[0.2em] uppercase font-bold cursor-pointer transition-all duration-300"
+                className="flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-10 py-3 sm:py-4 rounded-full font-sans text-[11px] sm:text-xs tracking-[0.14em] sm:tracking-[0.2em] uppercase font-bold cursor-pointer transition-all duration-300 max-w-[88vw] text-center"
                 style={{
                   background: "linear-gradient(90deg, #d4af37 0%, #f7e4a9 50%, #d4af37 100%)",
                   color: "#1a0030",
@@ -352,8 +359,8 @@ export default function PalaceGateEntry({ onEnter }: PalaceGateEntryProps) {
                   border: "none"
                 }}
               >
-                <Key className="w-4 h-4" style={{ animation: "bounce 1s infinite" }} />
-                {t("gateEntry.openGateBtn")}
+                <Key className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" style={{ animation: "bounce 1s infinite" }} />
+                <span>{t("gateEntry.openGateBtn")}</span>
               </motion.button>
             </motion.div>
 
@@ -362,18 +369,18 @@ export default function PalaceGateEntry({ onEnter }: PalaceGateEntryProps) {
               initial={false}
               animate={isEntering ? { opacity: 0, scale: 0.7 } : { opacity: 1, scale: 1 }}
               transition={{ duration: 0.4, ease: "easeInOut" }}
-              className="absolute left-1/2 -translate-x-1/2 z-40 max-w-[95vw]"
-              style={{ top: "66%" }}
+              className="absolute left-1/2 -translate-x-1/2 z-40 w-[92vw] max-w-[380px] sm:w-auto sm:max-w-[95vw]"
+              style={{ top: "64%" }}
             >
-              <div className="flex flex-col items-center gap-2 px-4 py-2.5 rounded-2xl border border-[#d4af37]/35 bg-black/85 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.1)]">
+              <div className="flex flex-col items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-2xl border border-[#d4af37]/35 bg-black/85 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.1)]">
                 {/* Main branding row */}
                 <a
-                  href="http://dotr.in"
+                  href="https://dotr.in"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 cursor-pointer group"
+                  className="flex items-center gap-2.5 sm:gap-3 cursor-pointer group max-w-full"
                 >
-                  <div className="relative flex items-center justify-center p-1 bg-white rounded-lg border border-[#d4af37]/40 h-8 w-16 sm:h-9 sm:w-20 overflow-hidden shadow-sm flex-shrink-0">
+                  <div className="relative flex items-center justify-center p-1 bg-white rounded-lg border border-[#d4af37]/40 h-7 w-14 sm:h-9 sm:w-20 overflow-hidden shadow-sm flex-shrink-0">
                     <Image 
                       src="/logos/DOTR_Full_Color_Logo.png" 
                       alt="DHINOJA OmniTech Resolutions (DOTR) Logo" 
@@ -383,15 +390,15 @@ export default function PalaceGateEntry({ onEnter }: PalaceGateEntryProps) {
                     />
                   </div>
                   
-                  <div className="flex flex-col items-start text-left">
+                  <div className="flex flex-col items-start text-left min-w-0">
                     <span className="font-sans text-[7px] sm:text-[8px] tracking-[0.25em] text-[#d4af37]/90 uppercase font-bold">
                       Crafted By
                     </span>
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="font-sans text-[10px] sm:text-[11px] tracking-[0.08em] text-[#f7e4a9] font-bold uppercase group-hover:text-white transition-colors whitespace-nowrap">
+                    <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap">
+                      <span className="font-sans text-[9px] sm:text-[11px] tracking-[0.04em] sm:tracking-[0.08em] text-[#f7e4a9] font-bold uppercase group-hover:text-white transition-colors">
                         DHINOJA OmniTech Resolutions
                       </span>
-                      <span className="text-[9px] font-bold tracking-wider text-[#d4af37] bg-[#d4af37]/20 px-1.5 py-0.5 rounded border border-[#d4af37]/40 leading-none">
+                      <span className="text-[8px] sm:text-[9px] font-bold tracking-wider text-[#d4af37] bg-[#d4af37]/20 px-1.5 py-0.5 rounded border border-[#d4af37]/40 leading-none">
                         DOTR
                       </span>
                     </div>
@@ -399,7 +406,7 @@ export default function PalaceGateEntry({ onEnter }: PalaceGateEntryProps) {
                 </a>
 
                 {/* Contact pills row (Phone & Email) */}
-                <div className="flex items-center gap-2 pt-1.5 border-t border-[#d4af37]/20 w-full justify-center text-[10px] text-[#f7e4a9]/90 font-sans tracking-wide">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1.5 border-t border-[#d4af37]/20 w-full justify-center text-[9px] sm:text-[10px] text-[#f7e4a9]/90 font-sans tracking-wide">
                   <a
                     href="tel:+918200965524"
                     className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 hover:bg-[#d4af37] hover:text-black border border-[#d4af37]/25 transition-all duration-300 font-semibold whitespace-nowrap"

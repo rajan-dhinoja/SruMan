@@ -30,13 +30,13 @@ export default function Couple() {
       <div className={`${language === "en" ? "max-w-7xl" : "max-w-6xl"} mx-auto w-full flex flex-col items-center z-20 flex-grow justify-center mt-4 px-2 sm:px-4`}>
         {/* Traditional Invitation Envelope Card */}
         <motion.div
-          className="w-full relative bg-white/70 backdrop-blur-md rounded-[2.5rem] border-2 border-[#d4af37]/35 p-6 sm:p-10 md:p-14 lg:p-16 shadow-[0_15px_50px_rgba(138,21,37,0.06)] text-center flex flex-col items-center overflow-hidden"
+          className="w-full relative bg-white/70 backdrop-blur-md rounded-[2rem] sm:rounded-[2.5rem] border-2 border-[#d4af37]/35 p-5 sm:p-10 md:p-14 lg:p-16 shadow-[0_15px_50px_rgba(138,21,37,0.06)] text-center flex flex-col items-center overflow-hidden"
         >
           {/* Card Corner Ornaments */}
-          <div className="absolute top-0 left-0 w-16 h-16 border-l-2 border-t-2 border-[#d4af37]/40 rounded-tl-3xl m-4 pointer-events-none" />
-          <div className="absolute top-0 right-0 w-16 h-16 border-r-2 border-t-2 border-[#d4af37]/40 rounded-tr-3xl m-4 pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-16 h-16 border-l-2 border-b-2 border-[#d4af37]/40 rounded-bl-3xl m-4 pointer-events-none" />
-          <div className="absolute bottom-0 right-0 w-16 h-16 border-r-2 border-b-2 border-[#d4af37]/40 rounded-br-3xl m-4 pointer-events-none" />
+          <div className="absolute top-0 left-0 w-10 h-10 sm:w-16 sm:h-16 border-l-2 border-t-2 border-[#d4af37]/40 rounded-tl-2xl sm:rounded-tl-3xl m-2.5 sm:m-4 pointer-events-none" />
+          <div className="absolute top-0 right-0 w-10 h-10 sm:w-16 sm:h-16 border-r-2 border-t-2 border-[#d4af37]/40 rounded-tr-2xl sm:rounded-tr-3xl m-2.5 sm:m-4 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-10 h-10 sm:w-16 sm:h-16 border-l-2 border-b-2 border-[#d4af37]/40 rounded-bl-2xl sm:rounded-bl-3xl m-2.5 sm:m-4 pointer-events-none" />
+          <div className="absolute bottom-0 right-0 w-10 h-10 sm:w-16 sm:h-16 border-r-2 border-b-2 border-[#d4af37]/40 rounded-br-2xl sm:rounded-br-3xl m-2.5 sm:m-4 pointer-events-none" />
 
           {/* Shreenathji Grace Heading */}
           <motion.p
